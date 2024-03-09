@@ -2,6 +2,7 @@ import { Box, useInput } from 'ink';
 import React, { useState } from 'react';
 
 import { useLearningPlatform } from './services/useLearningPlatform/index.js';
+import { useNavigation } from './services/useNavigation/index.js';
 import LoadingSpinner from './ui/component/LoadingSpinner.js';
 import Login from './ui/feature/Login/index.js';
 import useLoginPage from './ui/feature/Login/useLoginPage.js';
@@ -16,6 +17,8 @@ const App = () => {
   const { isAuthenticated, isLoadingSession } = useLearningPlatform();
 
   const [activePanel, setActivePanel] = useState(0);
+
+  const navigation = useNavigation();
 
   const loginPageProps = useLoginPage();
   const modulesListProps = useModulesList(true);
@@ -60,11 +63,17 @@ const App = () => {
   ]);
 
   useInput((input, key) => {
+    if (key.escape) {
+      navigation.unfocus();
+    }
+    if (!navigation.canReceiveHotkeys) return;
+
     if (['q', 'Q'].includes(input)) {
-      // flush the screen before quitting the command
+      // flush the screen before quitting the application
       process.stdout.write('\x1b[2J\x1b[0;0H');
       process.exit(0);
     }
+
     if (key.tab) {
       if (key.shift) {
         if (activePanel === 1) {

@@ -18,9 +18,6 @@ export default function useModulesList(isActive = true) {
         (j: any) => j.semester.isActive && !j.isDraft && !j.hasDuplicate
       )
   );
-
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(0);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,10 +27,15 @@ export default function useModulesList(isActive = true) {
 
   useInput(
     (input, key) => {
-      if (key.leftArrow && !isSearchFocused) {
+      if (input === 's') {
+        navigation.focus('modules:search');
+      }
+      if (!navigation.canReceiveHotkeys) return;
+
+      if (key.leftArrow) {
         setCurrentPage((prev) => (prev > 0 ? prev - 1 : prev));
       }
-      if (key.rightArrow && !isSearchFocused) {
+      if (key.rightArrow) {
         setCurrentPage((prev) => (prev < numPages - 1 ? prev + 1 : prev));
       }
       if (key.upArrow) {
@@ -51,12 +53,6 @@ export default function useModulesList(isActive = true) {
         if (idx < modules.length - 1) {
           navigation.selectModule(modules[idx + 1]?.id);
         }
-      }
-      if (input === 's') {
-        setIsSearchFocused(true);
-      }
-      if (key.escape) {
-        setIsSearchFocused(false);
       }
     },
     { isActive }
@@ -93,7 +89,7 @@ export default function useModulesList(isActive = true) {
     modules: mappedModules,
     numPages,
     currentPage,
-    isSearchFocused,
+    isSearchFocused: navigation.focusedId === 'modules:search',
     searchQuery,
     onSearchQueryChange: setSearchQuery,
     isLoading: modulesQuery.isIdle || modulesQuery.isLoading,

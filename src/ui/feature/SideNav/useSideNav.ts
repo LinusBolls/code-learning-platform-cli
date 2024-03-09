@@ -1,6 +1,8 @@
 import { useInput } from 'ink';
 import { useState } from 'react';
 
+import { useNavigation } from '../../../services/useNavigation/index.js';
+
 export interface SideNavItem {
   title: string;
   hotkeys?: string[];
@@ -11,8 +13,12 @@ export default function useSideNav(
 ) {
   const [activeItemIdx, setActiveItemIdx] = useState(1);
 
+  const navigation = useNavigation();
+
   useInput(
     (input) => {
+      if (!navigation.canReceiveHotkeys) return;
+
       const item = itemGroups
         .flat()
         .find((item) => item.hotkeys?.includes(input));
