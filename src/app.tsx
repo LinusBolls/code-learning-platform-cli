@@ -61,7 +61,9 @@ const App = () => {
 
   useInput((input, key) => {
     if (['q', 'Q'].includes(input)) {
-      process.exit();
+      // flush the screen before quitting the command
+      process.stdout.write('\x1b[2J\x1b[0;0H');
+      process.exit(0);
     }
     if (key.tab) {
       if (key.shift) {
