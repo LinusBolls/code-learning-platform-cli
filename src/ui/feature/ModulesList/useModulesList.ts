@@ -1,7 +1,7 @@
 import FuzzySearch from 'fuzzy-search';
-import { useInput } from 'ink';
 import { useState } from 'react';
 
+import useInput from '../../../services/useInput/index.js';
 import { useLearningPlatformModules } from '../../../services/useLearningPlatform/index.js';
 import { useNavigation } from '../../../services/useNavigation/index.js';
 import { toModuleViewModel } from '../../util/mapping.js';

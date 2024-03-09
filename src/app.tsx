@@ -1,6 +1,7 @@
-import { Box, useInput } from 'ink';
+import { Box } from 'ink';
 import React, { useState } from 'react';
 
+import useInput from './services/useInput/index.js';
 import { useLearningPlatform } from './services/useLearningPlatform/index.js';
 import { useNavigation } from './services/useNavigation/index.js';
 import LoadingSpinner from './ui/component/LoadingSpinner.js';

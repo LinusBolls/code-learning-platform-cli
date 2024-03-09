@@ -1,7 +1,8 @@
 import chalk from 'chalk';
-import { Text, useInput } from 'ink';
+import { Text } from 'ink';
 import React, { useEffect, useState } from 'react';
 
+import useInput from '../../services/useInput/index.js';
 import { useTheme } from '../../services/useTheme/index.js';
 
 export type TextInputProps = {

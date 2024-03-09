@@ -1,6 +1,6 @@
-import { useInput } from 'ink';
 import { useState } from 'react';
 
+import useInput from '../../../services/useInput/index.js';
 import { useNavigation } from '../../../services/useNavigation/index.js';
 
 export interface SideNavItem {
