@@ -1,0 +1,72 @@
+{
+  "name": "code-learning-platform-cli",
+  "version": "0.0.0",
+  "license": "MIT",
+  "bin": "dist/index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "format": "npx prettier --write . --config .prettierrc.cjs",
+    "build": "tsc",
+    "build:watch": "npx swc src -w --out-dir dist",
+    "start:watch": "npx chokidar 'dist/**/*' -c 'reset; node dist/index.js --program se'",
+    "dev": "npm-run-all --parallel build:watch start:watch",
+    "test": "prettier --check . && xo && ava",
+    "start": "node dist/index.js --program se"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "code-university": "^1.2.1",
+    "fuzzy-search": "^3.2.1",
+    "ink": "^4.1.0",
+    "ink-big-text": "^2.0.0",
+    "ink-link": "^3.0.0",
+    "meow": "^11.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-query": "^3.39.3",
+    "usehooks-ts": "^2.16.0",
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@sindresorhus/tsconfig": "^3.0.1",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@types/fuzzy-search": "^2.1.5",
+    "@types/react": "^18.0.32",
+    "@vdemedes/prettier-config": "^2.0.1",
+    "ava": "^5.2.0",
+    "chalk": "^5.2.0",
+    "chokidar": "^3.6.0",
+    "chokidar-cli": "^3.0.0",
+    "eslint-config-xo-react": "^0.27.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "ink-testing-library": "^3.0.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.8.7",
+    "swc": "^1.0.11",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.3",
+    "xo": "^0.53.1"
+  },
+  "ava": {
+    "extensions": {
+      "ts": "module",
+      "tsx": "module"
+    },
+    "nodeArguments": [
+      "--loader=ts-node/esm"
+    ]
+  },
+  "xo": {
+    "extends": "xo-react",
+    "prettier": true,
+    "rules": {
+      "react/prop-types": "off"
+    }
+  }
+}
