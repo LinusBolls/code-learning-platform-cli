@@ -15,6 +15,7 @@ export interface Module {
   departmentColor: string;
   ects: number;
   graded: boolean;
+  retired: boolean;
 }
 export interface ModulesListProps {
   activeModuleId?: string | null;
@@ -76,7 +77,17 @@ export default function ModulesList({
                   <Text color={module.departmentColor} wrap="truncate" bold>
                     {module.departmentShortCode}{' '}
                   </Text>
+                  {module.retired && (
+                    <Text
+                      bold
+                      backgroundColor={theme.info.retired}
+                      color="#1F1F1F"
+                    >
+                      Retired
+                    </Text>
+                  )}
                   <Text color={theme.text.default} wrap="truncate" bold>
+                    {module.retired && ' '}
                     {module.title}
                   </Text>
                   <Text bold={false} color={theme.text.secondary}>

@@ -6,6 +6,7 @@ export const toModuleViewModel = (module: any) => {
     id: module.id,
     shortCode: module.shortCode ?? 'N/A',
     title: module.title,
+    retired: module.retired,
     coordinatorName: module.coordinator.name ?? 'No coordinator',
     departmentShortCode:
       getDepartment(module.department?.abbreviation)?.id ?? 'N/A',

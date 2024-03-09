@@ -59,6 +59,9 @@ export const theme = {
       main: '#00000',
     },
   },
+  info: {
+    retired: '#FFE58F',
+  },
 };
 
 export function useTheme() {
