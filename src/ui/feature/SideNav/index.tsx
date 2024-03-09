@@ -3,19 +3,20 @@ import { Box, Text } from 'ink';
 import React, { useRef } from 'react';
 
 import { useTheme } from '../../../services/useTheme/index.js';
+import Divider from '../../component/Divider.js';
 import TitledBox from '../../component/TitledBox.js';
 import { useElementSize } from '../../util/useElementSize.js';
 
 export interface SideNavItemProps {
   title: string;
+  hotkeys?: string[];
 
   isActive: boolean;
-  isNavActive: boolean;
 }
 export function SideNavItem({
   title: originalTitle,
+  hotkeys,
   isActive,
-  isNavActive,
 }: SideNavItemProps) {
   const { theme } = useTheme();
 
@@ -23,62 +24,63 @@ export function SideNavItem({
 
   const { width } = useElementSize(navItemRef);
 
-  const title = ' ' + originalTitle.padEnd(width - 1, ' ');
+  const hint = hotkeys?.[0] ? hotkeys[0] + ' ' : '  ';
+
+  const title = ' ' + hint + originalTitle.padEnd(width - 1 - hint.length, ' ');
 
   const coloredTitle = isActive
     ? chalk
-        .bgHex(
-          isNavActive
-            ? theme.highlight.active.background
-            : theme.highlight.main.background
-        )
-        .hex(
-          isNavActive ? theme.highlight.active.main : theme.highlight.main.main
-        )(title)
+        .bgHex(theme.highlight.active.background)
+        .hex(theme.highlight.active.main)(title)
     : chalk.hex(theme.text.default)(title);
 
   return (
-    <Box ref={navItemRef} paddingTop={1}>
+    <Box ref={navItemRef}>
       <Text bold>{coloredTitle}</Text>
     </Box>
   );
 }
 
 export interface SideNavProps {
-  isActive?: boolean;
-  items: { title: string }[];
+  itemGroups: { title: string; hotkeys?: string[] }[][];
   activeItemIdx: number;
 }
-export default function SideNav({
-  isActive = true,
-  items,
-  activeItemIdx,
-}: SideNavProps) {
+export default function SideNav({ itemGroups, activeItemIdx }: SideNavProps) {
   const { theme } = useTheme();
-
-  const borderColor = isActive
-    ? theme.card.border.active
-    : theme.card.border.default;
-  const titleColor = isActive
-    ? theme.card.heading.active
-    : theme.card.heading.default;
 
   return (
     <TitledBox
-      title="Menu"
-      borderColor={borderColor}
-      titleProps={{ color: titleColor }}
+      title="Learning Platform"
+      borderColor={theme.card.border.default}
+      titleProps={{ color: theme.card.heading.default }}
       flexDirection="column"
       borderStyle="single"
+      paddingTop={1}
+      width={21}
     >
-      {items.map((item, index) => (
-        <SideNavItem
-          key={index}
-          {...item}
-          isActive={index === activeItemIdx}
-          isNavActive={isActive}
-        />
-      ))}
+      {itemGroups.map((itemGroup, index) => {
+        const isLast = index === itemGroups.length - 1;
+
+        return (
+          <Box flexDirection="column" key={index}>
+            {itemGroup.map((item, idx) => {
+              const actualIdx = itemGroups
+                .flat()
+                .findIndex((i) => i.title === item.title);
+
+              return (
+                <SideNavItem
+                  key={idx}
+                  title={item.title}
+                  hotkeys={item.hotkeys}
+                  isActive={actualIdx === activeItemIdx}
+                />
+              );
+            })}
+            {!isLast && <Divider />}
+          </Box>
+        );
+      })}
     </TitledBox>
   );
 }

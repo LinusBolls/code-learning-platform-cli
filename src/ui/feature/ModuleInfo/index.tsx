@@ -5,26 +5,14 @@ import { useTheme } from '../../../services/useTheme/index.js';
 import Divider from '../../component/Divider.js';
 
 export interface ModuleInfoProps {
-  isActive?: boolean;
-
   module: {
     shortCode: string;
     content: string;
     qualificationGoals: string;
   } | null;
 }
-export default function ModuleInfo({
-  isActive = true,
-  module,
-}: ModuleInfoProps) {
+export default function ModuleInfo({ module }: ModuleInfoProps) {
   const { theme } = useTheme();
-
-  const borderColor = isActive
-    ? theme.card.border.active
-    : theme.card.border.default;
-  const titleColor = isActive
-    ? theme.card.heading.active
-    : theme.card.heading.default;
 
   if (!module)
     return (
@@ -32,8 +20,8 @@ export default function ModuleInfo({
         <Divider
           title={'Modules/Unknown'}
           titlePosition="start"
-          color={borderColor}
-          titleProps={{ color: titleColor }}
+          color={theme.card.border.default}
+          titleProps={{ color: theme.card.heading.default }}
         />
         <Box
           flexDirection="column"
@@ -51,8 +39,8 @@ export default function ModuleInfo({
       <Divider
         title={'Modules/' + module.shortCode}
         titlePosition="start"
-        color={borderColor}
-        titleProps={{ color: titleColor }}
+        color={theme.card.border.default}
+        titleProps={{ color: theme.card.heading.default }}
       />
       <Text color={theme.text.default} wrap="wrap">
         {module.content}

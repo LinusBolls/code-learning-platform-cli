@@ -3,25 +3,30 @@ import { useState } from 'react';
 
 export interface SideNavItem {
   title: string;
+  hotkeys?: string[];
 }
-export default function useSideNav(isActive: boolean, items: SideNavItem[]) {
+export default function useSideNav(
+  isActive: boolean,
+  itemGroups: SideNavItem[][]
+) {
   const [activeItemIdx, setActiveItemIdx] = useState(1);
 
   useInput(
-    (input, key) => {
-      if (key.upArrow || input === 'k') {
-        setActiveItemIdx((prev) => (prev > 0 ? prev - 1 : prev));
-      }
-      if (key.downArrow || input === 'j') {
-        setActiveItemIdx((prev) => (prev < items.length - 1 ? prev + 1 : prev));
+    (input) => {
+      const item = itemGroups
+        .flat()
+        .find((item) => item.hotkeys?.includes(input));
+
+      if (item) {
+        const idx = itemGroups.flat().findIndex((i) => i.title === item.title);
+        setActiveItemIdx(idx);
       }
     },
     { isActive }
   );
 
   return {
-    isActive,
-    items,
+    itemGroups,
     activeItemIdx,
   };
 }

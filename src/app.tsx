@@ -18,34 +18,49 @@ const App = () => {
   const [activePanel, setActivePanel] = useState(0);
 
   const loginPageProps = useLoginPage();
-  const modulesListProps = useModulesList(activePanel === 1);
-  const moduleInfoProps = useModuleInfo(activePanel === 2);
-  const sideNavProps = useSideNav(activePanel === 0, [
-    {
-      title: 'Dashboard',
-    },
-    {
-      title: 'Modules',
-    },
-    {
-      title: 'Hand-ins',
-    },
-    {
-      title: 'Events',
-    },
-    {
-      title: 'Academic Events',
-    },
-    {
-      title: 'Projects',
-    },
-    {
-      title: 'Users',
-    },
+  const modulesListProps = useModulesList(true);
+  const moduleInfoProps = useModuleInfo(true);
+  const sideNavProps = useSideNav(true, [
+    [
+      {
+        title: 'Dashboard',
+        hotkeys: ['1'],
+      },
+      {
+        title: 'Modules',
+        hotkeys: ['2'],
+      },
+      {
+        title: 'Hand-ins',
+        hotkeys: ['3'],
+      },
+      {
+        title: 'Events',
+        hotkeys: ['4'],
+      },
+      {
+        title: 'Academic Events',
+        hotkeys: ['5'],
+      },
+      {
+        title: 'Projects',
+        hotkeys: ['6'],
+      },
+      {
+        title: 'Users',
+        hotkeys: ['7'],
+      },
+    ],
+    [
+      {
+        title: 'Exit',
+        hotkeys: ['Q', 'q'],
+      },
+    ],
   ]);
 
   useInput((input, key) => {
-    if (input === 'q') {
+    if (['q', 'Q'].includes(input)) {
       process.exit();
     }
     if (key.tab) {
@@ -80,7 +95,7 @@ const App = () => {
   }
 
   return (
-    <Box gap={2}>
+    <Box gap={1}>
       <SideNav {...sideNavProps} />
       {sideNavProps.activeItemIdx === 1 &&
         (activePanel < 2 ? (

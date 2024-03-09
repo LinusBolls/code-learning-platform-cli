@@ -18,7 +18,6 @@ export interface Module {
 }
 export interface ModulesListProps {
   activeModuleId?: string | null;
-  isActive?: boolean;
   modules: Module[];
   numPages: number;
   currentPage: number;
@@ -29,7 +28,6 @@ export interface ModulesListProps {
 }
 export default function ModulesList({
   activeModuleId,
-  isActive = true,
   modules,
   numPages,
   currentPage,
@@ -39,13 +37,6 @@ export default function ModulesList({
   isLoading = false,
 }: ModulesListProps) {
   const { theme } = useTheme();
-
-  const borderColor = isActive
-    ? theme.card.border.active
-    : theme.card.border.default;
-  const titleColor = isActive
-    ? theme.card.heading.active
-    : theme.card.heading.default;
 
   if (isLoading)
     return (
@@ -59,8 +50,8 @@ export default function ModulesList({
       <Divider
         title="Modules"
         titlePosition="start"
-        color={borderColor}
-        titleProps={{ color: titleColor }}
+        color={theme.card.border.default}
+        titleProps={{ color: theme.card.heading.default }}
       />
       <SearchBar
         isActive={isSearchFocused}

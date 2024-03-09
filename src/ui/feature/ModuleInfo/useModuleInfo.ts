@@ -19,7 +19,6 @@ export default function useModuleInfo(isActive = true) {
   const mappedModule = toModuleViewModel(rawModule);
 
   return {
-    isActive,
     module: mappedModule,
   };
 }

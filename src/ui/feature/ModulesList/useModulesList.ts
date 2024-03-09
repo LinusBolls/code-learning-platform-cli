@@ -90,7 +90,6 @@ export default function useModulesList(isActive = true) {
   const mappedModules = modulesToDisplay.map(toModuleViewModel);
 
   return {
-    isActive,
     modules: mappedModules,
     numPages,
     currentPage,
