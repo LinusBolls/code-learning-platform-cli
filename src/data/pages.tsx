@@ -3,6 +3,7 @@ import React from 'react';
 
 import { useTheme } from '../services/useTheme/index.js';
 import Breadcrumbs from '../ui/component/Breadcrumbs.js';
+import Dashboard from '../ui/feature/Dashboard/index.js';
 import ModuleInfo from '../ui/feature/ModuleInfo/index.js';
 import useModuleInfo from '../ui/feature/ModuleInfo/useModuleInfo.js';
 import ModulesList from '../ui/feature/ModulesList/index.js';
@@ -22,7 +23,7 @@ function Placeholder({ title }: { title: string }) {
 
 export const pages = {
   dashboard: {
-    render: () => <Placeholder title="Dashboard" />,
+    render: () => <Dashboard />,
     id: 'dashboard',
     title: 'Dashboard',
     hotkeys: ['1'],
