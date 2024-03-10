@@ -30,6 +30,8 @@ export interface ModulesListProps {
   searchQuery?: string;
   onSearchQueryChange: (query: string) => void;
   isLoading?: boolean;
+  onSearchSubmit?: (openResultIfOnlyOne?: boolean) => void;
+  onSearchCancel?: () => void;
 }
 export default function ModulesList({
   modulesPerPage,
@@ -41,6 +43,8 @@ export default function ModulesList({
   searchQuery = '',
   onSearchQueryChange,
   isLoading = false,
+  onSearchSubmit,
+  onSearchCancel,
 }: ModulesListProps) {
   const { theme } = useTheme();
 
@@ -69,6 +73,11 @@ export default function ModulesList({
         isError={modulesQuery.isError}
       />
       <SearchBar
+        onInput={(_, key) => {
+          if (key.downArrow || key.tab) onSearchSubmit?.(false);
+        }}
+        onSubmit={() => onSearchSubmit?.()}
+        onCancel={onSearchCancel}
         isActive={isSearchFocused}
         placeholder="S Search by name, department, or coordinator"
         value={searchQuery}

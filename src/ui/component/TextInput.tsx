@@ -20,7 +20,7 @@ export type TextInputProps = {
   /**
    * If set to `password`, the input will be censored with the `*` symbol.
    */
-  type?: 'text' | 'password';
+  type?: 'text' | 'password' | 'search';
 
   /**
    * Replace all chars and mask the value. Useful for password inputs.
@@ -51,6 +51,8 @@ export type TextInputProps = {
    * Function to call when `Enter` is pressed, where first argument is a value of the input.
    */
   onSubmit?: (value: string) => void;
+
+  onInput?: Parameters<typeof useInput>[0];
 };
 
 /**
@@ -66,6 +68,7 @@ export default function TextInput({
   showCursor = true,
   onChange,
   onSubmit,
+  onInput,
 }: TextInputProps) {
   const { theme } = useTheme();
 
@@ -135,9 +138,12 @@ export default function TextInput({
 
   useInput(
     (input, key) => {
+      if (onInput) {
+        onInput(input, key);
+      }
+
       if (
         key.upArrow ||
-        key.downArrow ||
         (key.ctrl && input === 'c') ||
         key.tab ||
         (key.shift && key.tab)
@@ -149,7 +155,6 @@ export default function TextInput({
         if (onSubmit) {
           onSubmit(originalValue);
         }
-
         return;
       }
 

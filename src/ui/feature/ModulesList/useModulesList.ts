@@ -13,6 +13,9 @@ export default function useModulesList(isActive = true) {
 
   const modulesToDisplay = Object.values(
     (modulesQuery.data?.modules ?? [])
+      .filter(
+        (i) => i.department != null // i.semesterModules.some((j: any) => j.semester.isActive && !j.isDraft)
+      )
       // we want only list a module once, even if it's available in multiple handbooks.
       // for example: right now, there are 2 active "Clean Code" modules, one for handbook v1 and one for handbook v2.
       // we only want one of them (doesn't really matter which one), and they have the same moduleIdentifier, so we'll only include one of them in this object.
@@ -44,7 +47,7 @@ export default function useModulesList(isActive = true) {
       sort: true,
     }
   );
-  const searchResults = searcher.search(searchQuery);
+  const searchResults = searcher.search(searchQuery.trim());
 
   const modulesPerPage = 7;
 
@@ -67,6 +70,10 @@ export default function useModulesList(isActive = true) {
     (input, key) => {
       if (input === 's') {
         navigation.focus('modules:search');
+        navigation.unselectModule();
+      }
+      if (key.escape) {
+        navigation.unselectModule();
       }
       if (!navigation.canReceiveHotkeys) return;
 
@@ -105,6 +112,18 @@ export default function useModulesList(isActive = true) {
   );
 
   return {
+    onSearchSubmit: (openResultIfOnlyOne = true) => {
+      navigation.unfocus();
+      navigation.selectModule(modulesInList[0]?.id);
+      if (openResultIfOnlyOne && modulesInList.length === 1) {
+        navigation.openPage('module');
+      }
+    },
+    onSearchCancel: () => {
+      navigation.unfocus();
+      setSearchQuery('');
+    },
+
     modulesPerPage: modulesPerPage,
     modules: mappedModules,
     numPages,

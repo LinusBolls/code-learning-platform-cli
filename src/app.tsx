@@ -46,13 +46,14 @@ const App = () => {
       quitApplication();
     }
 
-    if (key.tab) {
-      if (navigation.moduleId) {
-        if (navigation.pageId === 'modules') {
-          navigation.openPage('module');
-        } else if (navigation.pageId === 'module' && key.shift) {
-          navigation.openPage('modules');
-        }
+    if ((key.tab && !key.shift) || key.return || input === ' ') {
+      if (navigation.moduleId && navigation.pageId === 'modules') {
+        navigation.openPage('module');
+      }
+    }
+    if ((key.tab && key.shift) || key.leftArrow || key.escape) {
+      if (navigation.pageId === 'module') {
+        navigation.openPage('modules');
       }
     }
   });

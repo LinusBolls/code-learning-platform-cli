@@ -5,6 +5,7 @@ import { useTheme } from '../../services/useTheme/index.js';
 import TextInput, { TextInputProps } from './TextInput.js';
 
 export interface SearchBarProps extends TextInputProps {
+  onCancel?: () => void;
   isActive: boolean;
 }
 export default function SearchBar({ isActive, ...rest }: SearchBarProps) {
@@ -16,7 +17,7 @@ export default function SearchBar({ isActive, ...rest }: SearchBarProps) {
 
   return (
     <Box paddingLeft={1} borderColor={borderColor} borderStyle="single">
-      <TextInput {...rest} focus={isActive} />
+      <TextInput {...rest} focus={isActive} type="search" />
     </Box>
   );
 }

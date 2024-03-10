@@ -53,6 +53,8 @@ export default function PaginationIndicator({
     ? numPages - numTabs
     : Math.max(currentPage - numTabs + 3, 0);
 
+  if (numPages <= 1) return null;
+
   return (
     <Box ref={containerRef}>
       {Array.from({ length: numTabs }, (_, tabIdx) => {
