@@ -1,12 +1,34 @@
 import FuzzySearch from 'fuzzy-search';
 import { useState } from 'react';
+import { create, useStore } from 'zustand';
 
 import useInput from '../../../services/useInput/index.js';
 import { useLearningPlatformModules } from '../../../services/useLearningPlatform/index.js';
 import { useNavigation } from '../../../services/useNavigation/index.js';
 import { toModuleViewModel } from '../../util/mapping.js';
 
+interface ModulesListStore {
+  currentPage: number;
+  searchQuery: string;
+  actions: {
+    setSearchQuery: (query: string) => void;
+    quitSearch: () => void;
+    goToPage: (page: number) => void;
+  };
+}
+const modulesListStore = create<ModulesListStore>((set) => ({
+  searchQuery: '',
+  currentPage: 0,
+  actions: {
+    setSearchQuery: (query) => set({ searchQuery: query }),
+    quitSearch: () => set({ searchQuery: '' }),
+    goToPage: (page) => set({ currentPage: page }),
+  },
+}));
+
 export default function useModulesList(isActive = true) {
+  const store = useStore(modulesListStore);
+
   const modulesQuery = useLearningPlatformModules();
 
   const navigation = useNavigation();
@@ -25,11 +47,7 @@ export default function useModulesList(isActive = true) {
         return modulesById;
       }, {})
   );
-  const [currentPage, setCurrentPage] = useState(0);
-
-  const [searchQuery, setSearchQuery] = useState('');
-
-  if (!searchQuery.length)
+  if (!store.searchQuery.length)
     modulesToDisplay.sort((a, b) =>
       a.simpleShortCode.localeCompare(b.simpleShortCode)
     );
@@ -47,22 +65,22 @@ export default function useModulesList(isActive = true) {
       sort: true,
     }
   );
-  const searchResults = searcher.search(searchQuery.trim());
+  const searchResults = searcher.search(store.searchQuery.trim());
 
   const modulesPerPage = 7;
 
   const numPages = Math.ceil(searchResults.length / modulesPerPage);
 
-  if (currentPage > numPages - 1) {
+  if (store.currentPage > numPages - 1) {
     if (numPages > 0) {
-      setCurrentPage(numPages - 1);
-    } else if (currentPage > 0) {
-      setCurrentPage(0);
+      store.actions.goToPage(numPages - 1);
+    } else if (store.currentPage > 0) {
+      store.actions.goToPage(0);
     }
   }
   const modulesInList = searchResults.slice(
-    currentPage * modulesPerPage,
-    currentPage * modulesPerPage + modulesPerPage
+    store.currentPage * modulesPerPage,
+    store.currentPage * modulesPerPage + modulesPerPage
   );
   const mappedModules = modulesInList.map(toModuleViewModel);
 
@@ -78,12 +96,16 @@ export default function useModulesList(isActive = true) {
       if (!navigation.canReceiveHotkeys) return;
 
       if (key.leftArrow) {
-        setCurrentPage((prev) => (prev > 0 ? prev - 1 : prev));
-        navigation.unselectModule();
+        if (store.currentPage > 0) {
+          store.actions.goToPage(store.currentPage - 1);
+          navigation.unselectModule();
+        }
       }
       if (key.rightArrow) {
-        setCurrentPage((prev) => (prev < numPages - 1 ? prev + 1 : prev));
-        navigation.unselectModule();
+        if (store.currentPage < numPages - 1) {
+          store.actions.goToPage(store.currentPage + 1);
+          navigation.unselectModule();
+        }
       }
       if (key.upArrow) {
         const selected = modulesInList.findIndex(
@@ -121,16 +143,16 @@ export default function useModulesList(isActive = true) {
     },
     onSearchCancel: () => {
       navigation.unfocus();
-      setSearchQuery('');
+      store.actions.quitSearch();
     },
 
     modulesPerPage: modulesPerPage,
     modules: mappedModules,
     numPages,
-    currentPage,
+    currentPage: store.currentPage,
     isSearchFocused: navigation.focusedId === 'modules:search',
-    searchQuery,
-    onSearchQueryChange: setSearchQuery,
+    searchQuery: store.searchQuery,
+    onSearchQueryChange: store.actions.setSearchQuery,
     isLoading: modulesQuery.isLoading,
     activeModuleId: navigation.moduleId,
   };

@@ -32,3 +32,11 @@ render(
   </QueryClientProvider>,
   { patchConsole: ExecutionContext.runtime.isNode }
 );
+
+/**
+ * when we migrated the state in `useModulesList` to zustand, we started getting an error message from react
+ * when on the last tab of the modules list and specifying a search query so that the curren page would no longer exist.
+ * it works, though
+ */
+console.error = () => {};
+console.warn = () => {};
