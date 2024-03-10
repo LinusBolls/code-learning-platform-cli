@@ -13,6 +13,7 @@ import { useFileSystem } from '../useFileSystem/index.js';
 
 interface LearningPlatformStore {
   client: LearningPlatformClientType | null;
+  hasAttemptedSessionLoad: boolean;
   isLoadingSession: boolean;
   actions: {
     startLoadingSession: () => void;
@@ -25,12 +26,22 @@ interface LearningPlatformStore {
 const useLearningPlatformStore = create<LearningPlatformStore>((set) => ({
   client: null,
   isLoadingSession: true,
+  hasAttemptedSessionLoad: false,
   actions: {
-    startLoadingSession: () => set({ client: null, isLoadingSession: true }),
+    startLoadingSession: () =>
+      set({
+        client: null,
+        isLoadingSession: true,
+        hasAttemptedSessionLoad: true,
+      }),
     finishLoadingSession: (client: LearningPlatformClientType) =>
       set({ client, isLoadingSession: false }),
     signOut: () => set({ client: null, isLoadingSession: false }),
-    abortLoadingSession: () => set({ client: null, isLoadingSession: false }),
+    abortLoadingSession: () =>
+      set({
+        client: null,
+        isLoadingSession: false,
+      }),
   },
 }));
 
@@ -132,6 +143,8 @@ export const useLearningPlatform = (options?: UseLearningPlatformOptions) => {
   const isLoadingSession = store.isLoadingSession;
 
   async function signInWithAccessToken(accessToken: string) {
+    store.actions.startLoadingSession();
+
     const client = await LearningPlatformClient.fromAccessToken(
       accessToken,
       options?.clientOptions
@@ -164,7 +177,9 @@ export const useLearningPlatform = (options?: UseLearningPlatformOptions) => {
   }
 
   useEffect(() => {
-    loadSessionFromStorage();
+    if (!store.hasAttemptedSessionLoad) {
+      loadSessionFromStorage();
+    }
   }, []);
 
   async function signOut() {
