@@ -46,8 +46,6 @@ export interface SideNavProps {
   activeItemIdx: number;
 }
 export default function SideNav({ itemGroups, activeItemIdx }: SideNavProps) {
-  const { theme } = useTheme();
-
   return (
     <TitledBox title="Learning Platform" paddingTop={1} width={21}>
       {itemGroups.map((itemGroup, index) => {

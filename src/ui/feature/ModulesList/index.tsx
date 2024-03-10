@@ -115,8 +115,8 @@ export default function ModulesList({
                   {module.retired && (
                     <Text
                       bold
-                      backgroundColor={theme.info.retired}
-                      color="#1F1F1F"
+                      backgroundColor={theme.module.retired.main}
+                      color={theme.highlight.active.main}
                     >
                       Retired
                     </Text>

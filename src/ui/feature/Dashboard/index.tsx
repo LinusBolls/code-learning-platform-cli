@@ -90,37 +90,37 @@ export default function Dashboard({
               <>
                 <EctsProgressItem
                   title="Orientation Semester"
-                  progressColor="#a0d911"
+                  progressColor={theme.module.orientation.main}
                   data={ectsData.orientation}
                 />
                 <EctsProgressItem
                   title="Mandatory Modules"
-                  progressColor="#1890ff"
+                  progressColor={theme.module.core.main}
                   data={ectsData.mandatory}
                 />
                 <EctsProgressItem
                   title="Compulsory Elective Modules"
-                  progressColor="#1890ff"
+                  progressColor={theme.module.core.main}
                   data={ectsData.compulsoryElective}
                 />
                 <EctsProgressItem
                   title="Elective Modules"
-                  progressColor="#1890ff"
+                  progressColor={theme.module.core.main}
                   data={ectsData.elective}
                 />
                 <EctsProgressItem
                   title="MandatorySTS Modules"
-                  progressColor="#1890ff"
+                  progressColor={theme.module.core.main}
                   data={ectsData.sts}
                 />
                 <EctsProgressItem
                   title="Thesis"
-                  progressColor="#ffa940"
+                  progressColor={theme.module.synthesis.main}
                   data={ectsData.thesis}
                 />
                 <EctsProgressItem
                   title="Capstone Project"
-                  progressColor="#ffa940"
+                  progressColor={theme.module.synthesis.main}
                   data={ectsData.capstone}
                 />
               </>

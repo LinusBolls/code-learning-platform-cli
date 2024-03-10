@@ -59,8 +59,13 @@ export const theme = {
       main: '#00000',
     },
   },
-  info: {
-    retired: '#FFE58F',
+  module: {
+    orientation: { main: '#a0d911' },
+    core: { main: '#1890ff' },
+    synthesis: { main: '#ffa940' },
+    retired: {
+      main: '#1F1F1F',
+    },
   },
 };
 
