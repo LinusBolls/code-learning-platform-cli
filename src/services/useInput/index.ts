@@ -1,11 +1,9 @@
 import { useInput as useInputInk } from 'ink';
 
+import { ExecutionContext } from '../cli/index.js';
 import { useInputBunFill } from './useInputBunFill.js';
 
-// @ts-expect-error
-const runtimeIsBun = typeof Bun !== 'undefined';
-
-const useInput: typeof useInputInk = runtimeIsBun
+const useInput: typeof useInputInk = ExecutionContext.runtime.isBun
   ? useInputBunFill
   : useInputInk;
 

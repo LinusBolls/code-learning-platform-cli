@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import readline from 'readline';
 
 interface Key {
@@ -60,18 +60,18 @@ interface Key {
   meta: boolean;
 }
 
+// Set the stdin in raw mode to get the keypresses as they come, without needing to press enter
+process.stdin.setRawMode?.(true);
+process.stdin.resume?.();
+process.stdin.setEncoding?.('utf8');
+
+readline.emitKeypressEvents(process.stdin);
+
 export function useInputBunFill(
   inputHandler: (input: string, key: Key) => void,
   options?: { isActive?: boolean }
 ) {
-  // Set the stdin in raw mode to get the keypresses as they come, without needing to press enter
-  process.stdin.setRawMode(true);
-  process.stdin.resume();
-  process.stdin.setEncoding('utf8');
-
-  readline.emitKeypressEvents(process.stdin);
-
-  const func = useCallback(
+  const handleKeyPress = useCallback(
     (
       str: string,
       key: {
@@ -84,7 +84,7 @@ export function useInputBunFill(
     ) => {
       if (options?.isActive === false) return;
 
-      inputHandler(str, {
+      inputHandler(str ?? '', {
         upArrow: key.name === 'up',
         downArrow: key.name === 'down',
         leftArrow: key.name === 'left',
@@ -101,7 +101,12 @@ export function useInputBunFill(
         meta: key.meta,
       });
     },
-    []
+    [options?.isActive, inputHandler]
   );
-  process.stdin.on('keypress', func);
+  useEffect(() => {
+    process.stdin.addListener('keypress', handleKeyPress);
+    return () => {
+      process.stdin.removeListener('keypress', handleKeyPress);
+    };
+  }, [handleKeyPress]);
 }

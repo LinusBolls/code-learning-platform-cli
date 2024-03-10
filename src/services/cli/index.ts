@@ -34,3 +34,18 @@ export function quitApplication() {
   );
   process.exit(0);
 }
+
+export const ExecutionContext = {
+  runtime: {
+    // @ts-expect-error
+    isNode: typeof Bun === 'undefined',
+    /**
+     * Bun is a javascript runtime (meadning a modern alternative to NodeJs), that has first-class typescript support, among other advantages.
+     * however, some NodeJs apis are not yet supported by Bun, so we have to accommodate this:
+     * (1) `console.Console` constructor, which is used by `ink` to patch the console.
+     * (2) `ink`s `useInput` hook
+     */
+    // @ts-expect-error
+    isBun: typeof Bun !== 'undefined',
+  },
+} as const;
