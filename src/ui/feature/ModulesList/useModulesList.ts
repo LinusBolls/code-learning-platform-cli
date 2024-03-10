@@ -11,7 +11,7 @@ export default function useModulesList(isActive = true) {
 
   const navigation = useNavigation();
 
-  const modules = Object.values(
+  const modulesToDisplay = Object.values(
     (modulesQuery.data?.modules ?? [])
       // we want only list a module once, even if it's available in multiple handbooks.
       // for example: right now, there are 2 active "Clean Code" modules, one for handbook v1 and one for handbook v2.
@@ -27,7 +27,39 @@ export default function useModulesList(isActive = true) {
   const [searchQuery, setSearchQuery] = useState('');
 
   if (!searchQuery.length)
-    modules.sort((a, b) => a.shortCode.localeCompare(b.shortCode));
+    modulesToDisplay.sort((a, b) => a.shortCode.localeCompare(b.shortCode));
+
+  const searcher = new FuzzySearch(
+    modulesToDisplay,
+    [
+      'title',
+      'coordinator.name',
+      'department.name',
+      'shortCode',
+      'moduleIdentifier',
+    ],
+    {
+      sort: true,
+    }
+  );
+  const searchResults = searcher.search(searchQuery);
+
+  const modulesPerPage = 7;
+
+  const numPages = Math.ceil(searchResults.length / modulesPerPage);
+
+  if (currentPage > numPages - 1) {
+    if (numPages > 0) {
+      setCurrentPage(numPages - 1);
+    } else if (currentPage > 0) {
+      setCurrentPage(0);
+    }
+  }
+  const modulesInList = searchResults.slice(
+    currentPage * modulesPerPage,
+    currentPage * modulesPerPage + modulesPerPage
+  );
+  const mappedModules = modulesInList.map(toModuleViewModel);
 
   useInput(
     (input, key) => {
@@ -43,57 +75,30 @@ export default function useModulesList(isActive = true) {
         setCurrentPage((prev) => (prev < numPages - 1 ? prev + 1 : prev));
       }
       if (key.upArrow) {
-        const idx = modules.findIndex(
-          (module) => module.id === navigation.moduleId
+        const selected = modulesInList.findIndex(
+          (i) => i.id === navigation.moduleId
         );
-        if (idx > 0) {
-          navigation.selectModule(modules[idx - 1]?.id);
+        if (selected === -1) {
+          navigation.selectModule(modulesInList[modulesInList.length - 1]?.id);
+        }
+        if (selected > 0) {
+          navigation.selectModule(modulesInList[selected - 1]?.id);
         }
       }
       if (key.downArrow) {
-        const idx = modules.findIndex(
-          (module) => module.id === navigation.moduleId
+        const selected = modulesInList.findIndex(
+          (i) => i.id === navigation.moduleId
         );
-        if (idx < modules.length - 1) {
-          navigation.selectModule(modules[idx + 1]?.id);
+        if (selected === -1) {
+          navigation.selectModule(modulesInList[0]?.id);
+        }
+        if (selected < modulesInList.length - 1) {
+          navigation.selectModule(modulesInList[selected + 1]?.id);
         }
       }
     },
     { isActive }
   );
-
-  const searcher = new FuzzySearch(
-    modules,
-    [
-      'title',
-      'coordinator.name',
-      'department.name',
-      'shortCode',
-      'moduleIdentifier',
-    ],
-    {
-      sort: true,
-    }
-  );
-  const searchResults = searcher.search(searchQuery);
-
-  const modulesPerPage = 5;
-
-  const numPages = Math.ceil(searchResults.length / modulesPerPage);
-
-  if (currentPage > numPages - 1) {
-    if (numPages > 0) {
-      setCurrentPage(numPages - 1);
-    } else if (currentPage > 0) {
-      setCurrentPage(0);
-    }
-  }
-
-  const modulesToDisplay = searchResults.slice(
-    currentPage * modulesPerPage,
-    currentPage * modulesPerPage + modulesPerPage
-  );
-  const mappedModules = modulesToDisplay.map(toModuleViewModel);
 
   return {
     modulesPerPage: modulesPerPage,
