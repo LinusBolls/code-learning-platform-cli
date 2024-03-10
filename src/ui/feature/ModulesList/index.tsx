@@ -20,6 +20,7 @@ export interface Module {
   retired: boolean;
 }
 export interface ModulesListProps {
+  modulesPerPage: number;
   activeModuleId?: string | null;
   modules: Module[];
   numPages: number;
@@ -30,6 +31,7 @@ export interface ModulesListProps {
   isLoading?: boolean;
 }
 export default function ModulesList({
+  modulesPerPage,
   activeModuleId,
   modules,
   numPages,
@@ -71,7 +73,14 @@ export default function ModulesList({
         value={searchQuery}
         onChange={onSearchQueryChange}
       />
-      <Box flexDirection="column" alignItems="center" flexGrow={1} padding={1}>
+      <Box
+        flexDirection="column"
+        alignItems="center"
+        flexGrow={1}
+        padding={1}
+        // height of the modules + height of the dividers - vertical padding
+        height={modulesPerPage * 2 + (modulesPerPage - 1) + 2}
+      >
         {modules.length < 1 && (
           <Text color={theme.text.secondary}>No modules found.</Text>
         )}
@@ -79,7 +88,12 @@ export default function ModulesList({
           const isLast = idx === modules.length - 1;
 
           return (
-            <Box key={module.id} flexDirection="column" width="100%">
+            <Box
+              key={module.id}
+              flexDirection="column"
+              width="100%"
+              height={isLast ? 2 : 3}
+            >
               <Box
                 flexDirection="column"
                 paddingLeft={activeModuleId === module.id ? 2 : 0}

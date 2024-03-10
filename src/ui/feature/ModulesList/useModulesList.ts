@@ -13,11 +13,6 @@ export default function useModulesList(isActive = true) {
 
   const modules = Object.values(
     (modulesQuery.data?.modules ?? [])
-      .filter(
-        (i) =>
-          i.department != null &&
-          i.semesterModules.some((j: any) => j.semester.isActive && !j.isDraft)
-      )
       // we want only list a module once, even if it's available in multiple handbooks.
       // for example: right now, there are 2 active "Clean Code" modules, one for handbook v1 and one for handbook v2.
       // we only want one of them (doesn't really matter which one), and they have the same moduleIdentifier, so we'll only include one of them in this object.
@@ -95,6 +90,7 @@ export default function useModulesList(isActive = true) {
   const mappedModules = modulesToDisplay.map(toModuleViewModel);
 
   return {
+    modulesPerPage: modulesPerPage,
     modules: mappedModules,
     numPages,
     currentPage,
