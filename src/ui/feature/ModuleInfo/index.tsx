@@ -32,12 +32,20 @@ export default function ModuleInfo({ module }: ModuleInfoProps) {
   return (
     <Box flexDirection="column" flexGrow={1}>
       <Breadcrumbs steps={['Modules', module.shortCode]} />
-      <Text color={theme.text.default} wrap="wrap">
-        {module.content}
-      </Text>
-      <Text color={theme.text.default} wrap="wrap">
-        {module.qualificationGoals}
-      </Text>
+      <Box
+        flexDirection="column"
+        alignItems="center"
+        flexGrow={1}
+        padding={1}
+        width="80%"
+      >
+        <Text color={theme.text.default} wrap="wrap">
+          {module.content}
+        </Text>
+        <Text color={theme.text.default} wrap="wrap">
+          {module.qualificationGoals}
+        </Text>
+      </Box>
     </Box>
   );
 }

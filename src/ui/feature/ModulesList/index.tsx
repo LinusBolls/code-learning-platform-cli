@@ -46,7 +46,11 @@ export default function ModulesList({
   if (isLoading)
     return (
       <Box flexDirection="column" flexGrow={1}>
-        <Breadcrumbs steps={['Modules']} isLoading={modulesQuery.isFetching} />
+        <Breadcrumbs
+          steps={['Modules']}
+          isLoading={modulesQuery.isFetching}
+          isError={modulesQuery.isError}
+        />
         <Box alignItems="center" justifyContent="center" flexGrow={1}>
           <Text color={theme.text.secondary}>Loading modules</Text>
           <LoadingSpinner type="simpleDots" color={theme.text.secondary} />
@@ -56,7 +60,11 @@ export default function ModulesList({
 
   return (
     <Box flexDirection="column" flexGrow={1}>
-      <Breadcrumbs steps={['Modules']} isLoading={modulesQuery.isFetching} />
+      <Breadcrumbs
+        steps={['Modules']}
+        isLoading={modulesQuery.isFetching}
+        isError={modulesQuery.isError}
+      />
       <SearchBar
         isActive={isSearchFocused}
         placeholder="S Search by name, department, or coordinator"
