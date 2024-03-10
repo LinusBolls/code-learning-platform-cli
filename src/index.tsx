@@ -11,6 +11,7 @@ import App from './app.js';
 import {
   clearTerminalOnStartup,
   ExecutionContext,
+  quitApplication,
 } from './services/cli/index.js';
 import { writeJsonCacheSync } from './services/useFileSystem/index.js';
 
@@ -40,3 +41,12 @@ render(
  */
 console.error = () => {};
 console.warn = () => {};
+
+if (
+  ExecutionContext.runtime.isNode &&
+  ExecutionContext.runtime.majorNodeVersion <= 16
+) {
+  quitApplication(
+    `please upgrade to nodejs version v18.0.0 or newer. your current version is ${process.version}.`
+  );
+}

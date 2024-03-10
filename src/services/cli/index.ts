@@ -35,11 +35,14 @@ export function clearTerminalOnStartup() {
   );
 }
 
-export function quitApplication() {
+export function quitApplication(errorMessage?: string) {
   process.stdout.write(
     AnsiCode.clearScreen + AnsiCode.moveCursorToTopLeft + AnsiCode.showCursor
   );
-  process.exit(0);
+  if (errorMessage) {
+    process.stderr.write(errorMessage);
+  }
+  process.exit(errorMessage ? 1 : 0);
 }
 
 export const ExecutionContext = {
@@ -54,6 +57,10 @@ export const ExecutionContext = {
      */
     // @ts-expect-error
     isBun: typeof Bun !== 'undefined',
+
+    majorNodeVersion: parseInt(
+      process.version.match(/^v(\d+).\d+.\d+$/)?.[1] || 'NaN'
+    ),
   },
   terminal: {
     width: process.stdout.columns,
