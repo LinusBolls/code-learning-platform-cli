@@ -1,6 +1,7 @@
 import { Box, Text } from 'ink';
 import React from 'react';
 
+import { useLearningPlatformModules } from '../../../services/useLearningPlatform/index.js';
 import { useTheme } from '../../../services/useTheme/index.js';
 import Divider from '../../component/Divider.js';
 import LoadingSpinner from '../../component/LoadingSpinner.js';
@@ -22,8 +23,8 @@ export interface ModulesListProps {
   modules: Module[];
   numPages: number;
   currentPage: number;
-  isSearchFocused: boolean;
-  searchQuery: string;
+  isSearchFocused?: boolean;
+  searchQuery?: string;
   onSearchQueryChange: (query: string) => void;
   isLoading?: boolean;
 }
@@ -32,28 +33,53 @@ export default function ModulesList({
   modules,
   numPages,
   currentPage,
-  isSearchFocused,
-  searchQuery,
+  isSearchFocused = false,
+  searchQuery = '',
   onSearchQueryChange,
   isLoading = false,
 }: ModulesListProps) {
   const { theme } = useTheme();
 
+  const modulesQuery = useLearningPlatformModules();
+
   if (isLoading)
     return (
-      <Box alignItems="center" justifyContent="center" flexGrow={1}>
-        <LoadingSpinner />
+      <Box flexDirection="column" flexGrow={1}>
+        <Box flexDirection="row" height={1}>
+          <Divider
+            title="Modules"
+            titlePosition="start"
+            color={theme.card.border.default}
+            titleProps={{ color: theme.card.heading.default }}
+          />
+          {modulesQuery.isFetching && (
+            <Box paddingLeft={1}>
+              <LoadingSpinner type="dots" color={theme.text.secondary} />
+            </Box>
+          )}
+        </Box>
+        <Box alignItems="center" justifyContent="center" flexGrow={1}>
+          <Text color={theme.text.secondary}>Loading modules</Text>
+          <LoadingSpinner type="simpleDots" color={theme.text.secondary} />
+        </Box>
       </Box>
     );
 
   return (
     <Box flexDirection="column" flexGrow={1}>
-      <Divider
-        title="Modules"
-        titlePosition="start"
-        color={theme.card.border.default}
-        titleProps={{ color: theme.card.heading.default }}
-      />
+      <Box flexDirection="row" height={1}>
+        <Divider
+          title="Modules"
+          titlePosition="start"
+          color={theme.card.border.default}
+          titleProps={{ color: theme.card.heading.default }}
+        />
+        {modulesQuery.isFetching && (
+          <Box paddingLeft={1}>
+            <LoadingSpinner type="dots" color={theme.text.secondary} />
+          </Box>
+        )}
+      </Box>
       <SearchBar
         isActive={isSearchFocused}
         placeholder="S Search by name, department, or coordinator"

@@ -87,7 +87,7 @@ export default function Divider({
   );
 
   return (
-    <Box ref={dividerRef}>
+    <Box ref={dividerRef} flexGrow={1}>
       <Text wrap="end" color={color ?? theme.card.border.default}>
         {start + char.repeat(Math.max(padStart + titleOffset, 0))}
         <Text bold color={color ?? theme.card.border.default} {...titleProps}>

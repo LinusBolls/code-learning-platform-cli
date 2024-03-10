@@ -251,7 +251,7 @@ export const useLearningPlatformModules = () => {
 			}`),
     {
       enabled,
-      initialData: readJsonCacheSync('modules.cache.json') ?? { modules: [] },
+      initialData: readJsonCacheSync('modules.cache.json'),
       onSuccess(data) {
         writeJsonCacheSync('modules.cache.json', data);
       },

@@ -20,6 +20,7 @@
     "dist"
   ],
   "dependencies": {
+    "cli-spinners": "^2.9.2",
     "code-university": "^1.2.1",
     "fuzzy-search": "^3.2.1",
     "ink": "^4.1.0",

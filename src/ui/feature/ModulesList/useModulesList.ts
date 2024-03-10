@@ -101,7 +101,7 @@ export default function useModulesList(isActive = true) {
     isSearchFocused: navigation.focusedId === 'modules:search',
     searchQuery,
     onSearchQueryChange: setSearchQuery,
-    isLoading: modulesQuery.isIdle || modulesQuery.isLoading,
+    isLoading: modulesQuery.isLoading,
     activeModuleId: navigation.moduleId,
   };
 }

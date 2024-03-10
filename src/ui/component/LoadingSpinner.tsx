@@ -1,17 +1,47 @@
+import spinners from 'cli-spinners';
+import type { SpinnerName } from 'cli-spinners';
 import { Text } from 'ink';
-import React, { useState } from 'react';
-import { useInterval } from 'usehooks-ts';
+import React, { useEffect, useState } from 'react';
 
 import { useTheme } from '../../services/useTheme/index.js';
 
-export default function LoadingSpinner() {
-  const [count, setCount] = useState(1);
+type Props = {
+  /**
+   * Type of a spinner.
+   * See [cli-spinners](https://github.com/sindresorhus/cli-spinners) for available spinners.
+   *
+   * @default dots
+   */
+  type?: SpinnerName;
+
+  color?: string;
+};
+
+/**
+ * Spinner.
+ */
+function Spinner({ type = 'dots', color }: Props) {
+  const [frame, setFrame] = useState(0);
+  const spinner = spinners[type];
 
   const { theme } = useTheme();
 
-  useInterval(() => {
-    setCount(count > 2 ? 1 : count + 1);
-  }, 200);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setFrame((previousFrame) => {
+        const isLastFrame = previousFrame === spinner.frames.length - 1;
+        return isLastFrame ? 0 : previousFrame + 1;
+      });
+    }, spinner.interval);
 
-  return <Text color={theme.text.secondary}>{'.'.repeat(count)}</Text>;
+    return () => {
+      clearInterval(timer);
+    };
+  }, [spinner]);
+
+  return (
+    <Text color={color ?? theme.text.secondary}>{spinner.frames[frame]}</Text>
+  );
 }
+
+export default Spinner;
