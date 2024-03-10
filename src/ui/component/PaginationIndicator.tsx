@@ -1,13 +1,17 @@
-import { Box, measureElement, Text } from 'ink';
-import React, { useEffect, useRef, useState } from 'react';
+import { Box, Text } from 'ink';
+import React, { useRef } from 'react';
 
 import { useTheme } from '../../services/useTheme/index.js';
+import { useElementSize } from '../util/useElementSize.js';
 
 export interface PaginationIndicatorProps {
   numPages: number;
   currentPage?: number;
 }
 
+/**
+ * the amount of tabs that can physically fit in the container
+ */
 const getNumTabs = (containerWidth: number, numPages: number) => {
   // maps each page to the width it will take up as a `PaginationTab`
   const widths = Array.from({ length: numPages })
@@ -20,8 +24,8 @@ const getNumTabs = (containerWidth: number, numPages: number) => {
 
   return widths.toReversed().reduce(
     (acc, width) => {
-      if (acc.width + width > containerWidth) return acc;
-      return { ...acc, width: acc.width + width, numTabs: acc.numTabs + 1 };
+      if (acc.width + width >= containerWidth) return acc;
+      return { width: acc.width + width, numTabs: acc.numTabs + 1 };
     },
     { numTabs: 0, width: 0 }
   ).numTabs;
@@ -36,42 +40,41 @@ export default function PaginationIndicator({
 }: PaginationIndicatorProps) {
   const containerRef = useRef(null);
 
-  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
-
-  useEffect(() => {
-    if (containerRef.current) {
-      const size = measureElement(containerRef.current);
-
-      setContainerSize(size);
-    }
-  }, [containerRef]);
+  const containerSize = useElementSize(containerRef);
 
   const numTabs = getNumTabs(containerSize.width, numPages);
 
   const isTruncated = numPages > numTabs;
 
-  const sacheOffset = Math.max(currentPage - numTabs + 3, 0);
+  const isLastOrSecondToLast = currentPage >= numPages - 2;
+  const isLessThanThirdToLast = currentPage < numPages - 3;
 
-  const isDing = currentPage > numPages - 2;
+  const pagesNotDisplayed = isLastOrSecondToLast
+    ? numPages - numTabs
+    : Math.max(currentPage - numTabs + 3, 0);
 
   return (
     <Box ref={containerRef}>
-      {Array.from({ length: numTabs }, (_, idx) => {
-        if (isTruncated && idx === numTabs - 2 && currentPage < numPages - 2)
-          return <PaginationTab key={idx} text="..." />;
+      {Array.from({ length: numTabs }, (_, tabIdx) => {
+        const pageIdx = tabIdx + pagesNotDisplayed;
 
-        if (isTruncated && idx === numTabs - 1)
-          return <PaginationTab key={idx} text={numPages + 1} />;
+        if (isTruncated && tabIdx === numTabs - 2 && isLessThanThirdToLast)
+          return <PaginationTab key={tabIdx} text="..." />;
+
+        if (isTruncated && tabIdx === numTabs - 1)
+          return (
+            <PaginationTab
+              key={tabIdx}
+              text={numPages}
+              isActive={currentPage === numPages - 1}
+            />
+          );
 
         return (
           <PaginationTab
-            key={idx}
-            text={idx + 1 + sacheOffset}
-            isActive={
-              isDing
-                ? idx + sacheOffset === currentPage + 1
-                : idx + sacheOffset === currentPage
-            }
+            key={tabIdx}
+            text={pageIdx + 1}
+            isActive={currentPage === pageIdx}
           />
         );
       })}
