@@ -38,14 +38,14 @@ async function writeAuthConfigFile(contents: any) {
   await fs.promises.writeFile(configFilePath, JSON.stringify(contents));
 }
 
-function readJsonCacheSync<T>(fileName: string): T | undefined {
+export function readJsonCacheSync<T>(fileName: string): T | undefined {
   try {
     return JSON.parse(fs.readFileSync(join(cachePath, fileName), 'utf8'));
   } catch (err) {
     return undefined;
   }
 }
-function writeJsonCacheSync(fileName: string, data: unknown) {
+export function writeJsonCacheSync(fileName: string, data: unknown) {
   fs.writeFileSync(join(cachePath, fileName), JSON.stringify(data), {
     flag: 'w',
   });

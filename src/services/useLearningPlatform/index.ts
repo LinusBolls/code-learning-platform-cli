@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import {
   LearningPlatformClient,
   LearningPlatformClientOptions,
@@ -6,7 +7,6 @@ import {
 import fs from 'fs';
 import { join } from 'path';
 import { useEffect } from 'react';
-import { useQuery } from 'react-query';
 import { create } from 'zustand';
 
 import { useFileSystem } from '../useFileSystem/index.js';
@@ -208,12 +208,11 @@ export const useLearningPlatformModules = () => {
 
   const { readJsonCacheSync, writeJsonCacheSync } = useFileSystem();
 
-  return useQuery<{ modules: any[] }>(
-    ['learningPlatform', 'modules'],
-    async () =>
-      learningPlatform!.raw.query(`
-			query {
-				modules(pagination: { limit: 50, offset: 200 }) {
+  return useQuery<{ modules: any[] }>({
+    queryFn: async () => {
+      return await learningPlatform!.raw.query(`
+      query {
+      	modules {
           title
           shortCode
           moduleIdentifier
@@ -229,12 +228,9 @@ export const useLearningPlatformModules = () => {
           weeklyHours
           graded
           retired
-
-
-
-					coordinator {
-						name
-					}
+      		coordinator {
+      			name
+      		}
           prerequisites {
             id
           }
@@ -247,8 +243,6 @@ export const useLearningPlatformModules = () => {
           replacementFor {
               id
           }
-
-          
           semesterModules {
             allowsRegistration
             semester {
@@ -262,14 +256,12 @@ export const useLearningPlatformModules = () => {
           id
           createdAt
           updatedAt
-				}
-			}`),
-    {
-      enabled,
-      initialData: readJsonCacheSync('modules.cache.json'),
-      onSuccess(data) {
-        writeJsonCacheSync('modules.cache.json', data);
-      },
-    }
-  );
+      	}
+      }`);
+    },
+    queryKey: ['learningPlatform', 'modules'],
+    enabled,
+    retry: false,
+    initialData: readJsonCacheSync('learningPlatform-modules.cache.json'),
+  });
 };

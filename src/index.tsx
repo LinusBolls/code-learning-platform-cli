@@ -1,15 +1,30 @@
 #!/usr/bin/env node
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query';
 import { render } from 'ink';
 import React from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
 
 import App from './app.js';
+import { writeJsonCacheSync } from './services/useFileSystem/index.js';
 
 // @ts-expect-error
 const runtimeIsBun = typeof Bun !== 'undefined';
 
 render(
-  <QueryClientProvider client={new QueryClient()}>
+  <QueryClientProvider
+    client={
+      new QueryClient({
+        queryCache: new QueryCache({
+          onSuccess: (data, query) => {
+            writeJsonCacheSync(query.queryKey.join('-') + '.cache.json', data);
+          },
+        }),
+      })
+    }
+  >
     <App />
   </QueryClientProvider>,
   /**
