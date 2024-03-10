@@ -4,7 +4,7 @@ import { theme } from '../../services/useTheme/index.js';
 export const toModuleViewModel = (module: any) => {
   return {
     id: module.id,
-    shortCode: module.shortCode ?? 'N/A',
+    shortCode: module.simpleShortCode ?? 'N/A',
     title: module.title,
     retired: module.retired,
     coordinatorName: module.coordinator.name ?? 'No coordinator',

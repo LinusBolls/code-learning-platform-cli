@@ -13,6 +13,7 @@ export interface Module {
   id: string;
   title: string;
   coordinatorName: string;
+  shortCode: string;
   departmentShortCode: string;
   departmentColor: string;
   ects: number;
@@ -100,7 +101,7 @@ export default function ModulesList({
               >
                 <Box>
                   <Text color={module.departmentColor} wrap="truncate" bold>
-                    {module.departmentShortCode}{' '}
+                    {module.shortCode}{' '}
                   </Text>
                   {module.retired && (
                     <Text

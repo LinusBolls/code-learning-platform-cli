@@ -27,7 +27,9 @@ export default function useModulesList(isActive = true) {
   const [searchQuery, setSearchQuery] = useState('');
 
   if (!searchQuery.length)
-    modulesToDisplay.sort((a, b) => a.shortCode.localeCompare(b.shortCode));
+    modulesToDisplay.sort((a, b) =>
+      a.simpleShortCode.localeCompare(b.simpleShortCode)
+    );
 
   const searcher = new FuzzySearch(
     modulesToDisplay,
@@ -70,9 +72,11 @@ export default function useModulesList(isActive = true) {
 
       if (key.leftArrow) {
         setCurrentPage((prev) => (prev > 0 ? prev - 1 : prev));
+        navigation.unselectModule();
       }
       if (key.rightArrow) {
         setCurrentPage((prev) => (prev < numPages - 1 ? prev + 1 : prev));
+        navigation.unselectModule();
       }
       if (key.upArrow) {
         const selected = modulesInList.findIndex(
