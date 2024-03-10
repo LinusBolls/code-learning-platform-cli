@@ -21,3 +21,16 @@ export const cli = meow(
     },
   }
 );
+
+export const AnsiCode = {
+  clearScreen: '\x1b[2J',
+  moveCursorToTopLeft: '\x1b[0;0H',
+  showCursor: '\x1b[?25h',
+};
+
+export function quitApplication() {
+  process.stdout.write(
+    AnsiCode.clearScreen + AnsiCode.moveCursorToTopLeft + AnsiCode.showCursor
+  );
+  process.exit(0);
+}

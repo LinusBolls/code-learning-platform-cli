@@ -1,6 +1,7 @@
 import { Box } from 'ink';
 import React, { useState } from 'react';
 
+import { quitApplication } from './services/cli/index.js';
 import useInput from './services/useInput/index.js';
 import { useLearningPlatform } from './services/useLearningPlatform/index.js';
 import { useNavigation } from './services/useNavigation/index.js';
@@ -70,9 +71,7 @@ const App = () => {
     if (!navigation.canReceiveHotkeys) return;
 
     if (['q', 'Q'].includes(input)) {
-      // flush the screen before quitting the application
-      process.stdout.write('\x1b[2J\x1b[0;0H');
-      process.exit(0);
+      quitApplication();
     }
 
     if (key.tab) {
