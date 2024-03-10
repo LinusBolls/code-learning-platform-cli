@@ -55,4 +55,8 @@ export const ExecutionContext = {
     // @ts-expect-error
     isBun: typeof Bun !== 'undefined',
   },
+  terminal: {
+    width: process.stdout.columns,
+    height: process.stdout.rows,
+  },
 } as const;

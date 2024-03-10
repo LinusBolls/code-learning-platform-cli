@@ -1,11 +1,32 @@
 import FuzzySearch from 'fuzzy-search';
-import { useState } from 'react';
 import { create, useStore } from 'zustand';
 
+import { ExecutionContext } from '../../../services/cli/index.js';
 import useInput from '../../../services/useInput/index.js';
 import { useLearningPlatformModules } from '../../../services/useLearningPlatform/index.js';
 import { useNavigation } from '../../../services/useNavigation/index.js';
 import { toModuleViewModel } from '../../util/mapping.js';
+
+const getNumModules = (screenHeight: number) => {
+  // 9 lines are taken up by the breadcrumbs, searchbar, and pagination indicator, plus padding
+  const modulesHeight = screenHeight - 11;
+
+  let totalHeight = 0;
+  let numModules = 0;
+
+  while (totalHeight < modulesHeight) {
+    numModules += 1;
+    // a module row is 2 lines tall
+    totalHeight += 2;
+
+    const hasDivider = totalHeight + 2 < modulesHeight;
+
+    if (hasDivider) {
+      totalHeight += 1;
+    }
+  }
+  return numModules;
+};
 
 interface ModulesListStore {
   currentPage: number;
@@ -67,7 +88,7 @@ export default function useModulesList(isActive = true) {
   );
   const searchResults = searcher.search(store.searchQuery.trim());
 
-  const modulesPerPage = 7;
+  const modulesPerPage = getNumModules(ExecutionContext.terminal.height);
 
   const numPages = Math.ceil(searchResults.length / modulesPerPage);
 
