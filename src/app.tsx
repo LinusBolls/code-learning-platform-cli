@@ -1,6 +1,7 @@
 import { Box } from 'ink';
-import React, { useState } from 'react';
+import React from 'react';
 
+import { pages } from './data/pages.js';
 import { quitApplication } from './services/cli/index.js';
 import useInput from './services/useInput/index.js';
 import { useLearningPlatform } from './services/useLearningPlatform/index.js';
@@ -8,53 +9,24 @@ import { useNavigation } from './services/useNavigation/index.js';
 import LoadingSpinner from './ui/component/LoadingSpinner.js';
 import Login from './ui/feature/Login/index.js';
 import useLoginPage from './ui/feature/Login/useLoginPage.js';
-import ModuleInfo from './ui/feature/ModuleInfo/index.js';
-import useModuleInfo from './ui/feature/ModuleInfo/useModuleInfo.js';
-import ModulesList from './ui/feature/ModulesList/index.js';
-import useModulesList from './ui/feature/ModulesList/useModulesList.js';
 import SideNav from './ui/feature/SideNav/index.js';
 import useSideNav from './ui/feature/SideNav/useSideNav.js';
 
 const App = () => {
   const { isAuthenticated, isLoadingSession } = useLearningPlatform();
 
-  const [activePanel, setActivePanel] = useState(0);
-
   const navigation = useNavigation();
 
   const loginPageProps = useLoginPage();
-  const modulesListProps = useModulesList(true);
-  const moduleInfoProps = useModuleInfo(true);
   const sideNavProps = useSideNav(true, [
     [
-      {
-        title: 'Dashboard',
-        hotkeys: ['1'],
-      },
-      {
-        title: 'Modules',
-        hotkeys: ['2'],
-      },
-      {
-        title: 'Hand-ins',
-        hotkeys: ['3'],
-      },
-      {
-        title: 'Events',
-        hotkeys: ['4'],
-      },
-      {
-        title: 'Academic Events',
-        hotkeys: ['5'],
-      },
-      {
-        title: 'Projects',
-        hotkeys: ['6'],
-      },
-      {
-        title: 'Users',
-        hotkeys: ['7'],
-      },
+      pages.dashboard,
+      pages.modules,
+      pages.handIns,
+      pages.events,
+      pages.academicEvents,
+      pages.projects,
+      pages.users,
     ],
     [
       {
@@ -75,19 +47,11 @@ const App = () => {
     }
 
     if (key.tab) {
-      if (key.shift) {
-        if (activePanel === 1) {
-          setActivePanel(0);
-        }
-        if (activePanel === 2) {
-          setActivePanel(1);
-        }
-      } else {
-        if (activePanel === 0) {
-          setActivePanel(1);
-        }
-        if (activePanel === 1) {
-          setActivePanel(2);
+      if (navigation.moduleId) {
+        if (navigation.pageId === 'modules') {
+          navigation.openPage('module');
+        } else if (navigation.pageId === 'module' && key.shift) {
+          navigation.openPage('modules');
         }
       }
     }
@@ -104,18 +68,16 @@ const App = () => {
   if (!isAuthenticated) {
     return <Login {...loginPageProps} />;
   }
+  const pageData = pages[navigation.pageId as keyof typeof pages];
+
+  const Page = pageData.render;
 
   return (
     <Box columnGap={1}>
       <Box flexDirection="column">
         <SideNav {...sideNavProps} />
       </Box>
-      {sideNavProps.activeItemIdx === 1 &&
-        (activePanel < 2 ? (
-          <ModulesList {...modulesListProps} />
-        ) : (
-          <ModuleInfo {...moduleInfoProps} />
-        ))}
+      {<Page />}
     </Box>
   );
 };
