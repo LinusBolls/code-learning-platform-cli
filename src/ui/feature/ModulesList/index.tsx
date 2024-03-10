@@ -45,7 +45,7 @@ export default function ModulesList({
   if (isLoading)
     return (
       <Box flexDirection="column" flexGrow={1}>
-        <Box flexDirection="row" height={1}>
+        <Box gap={1}>
           <Divider
             title="Modules"
             titlePosition="start"
@@ -53,9 +53,7 @@ export default function ModulesList({
             titleProps={{ color: theme.card.heading.default }}
           />
           {modulesQuery.isFetching && (
-            <Box paddingLeft={1}>
-              <LoadingSpinner type="dots" color={theme.text.secondary} />
-            </Box>
+            <LoadingSpinner type="dots" color={theme.text.secondary} />
           )}
         </Box>
         <Box alignItems="center" justifyContent="center" flexGrow={1}>
@@ -67,7 +65,7 @@ export default function ModulesList({
 
   return (
     <Box flexDirection="column" flexGrow={1}>
-      <Box flexDirection="row" height={1}>
+      <Box gap={1}>
         <Divider
           title="Modules"
           titlePosition="start"
@@ -75,9 +73,7 @@ export default function ModulesList({
           titleProps={{ color: theme.card.heading.default }}
         />
         {modulesQuery.isFetching && (
-          <Box paddingLeft={1}>
-            <LoadingSpinner type="dots" color={theme.text.secondary} />
-          </Box>
+          <LoadingSpinner type="dots" color={theme.text.secondary} />
         )}
       </Box>
       <SearchBar

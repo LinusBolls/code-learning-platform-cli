@@ -107,8 +107,10 @@ const App = () => {
   }
 
   return (
-    <Box gap={1}>
-      <SideNav {...sideNavProps} />
+    <Box columnGap={1}>
+      <Box flexDirection="column">
+        <SideNav {...sideNavProps} />
+      </Box>
       {sideNavProps.activeItemIdx === 1 &&
         (activePanel < 2 ? (
           <ModulesList {...modulesListProps} />

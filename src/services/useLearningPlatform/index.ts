@@ -213,7 +213,7 @@ export const useLearningPlatformModules = () => {
     async () =>
       learningPlatform!.raw.query(`
 			query {
-				modules {
+				modules(pagination: { limit: 50, offset: 200 }) {
           title
           shortCode
           moduleIdentifier
