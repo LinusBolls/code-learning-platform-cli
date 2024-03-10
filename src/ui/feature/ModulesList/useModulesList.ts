@@ -79,9 +79,15 @@ export default function useModulesList(isActive = true) {
 
   const modulesPerPage = 5;
 
-  const numPages = modulesQuery.data
-    ? Math.ceil(searchResults.length / modulesPerPage)
-    : 0;
+  const numPages = Math.ceil(searchResults.length / modulesPerPage);
+
+  if (currentPage > numPages - 1) {
+    if (numPages > 0) {
+      setCurrentPage(numPages - 1);
+    } else if (currentPage > 0) {
+      setCurrentPage(0);
+    }
+  }
 
   const modulesToDisplay = searchResults.slice(
     currentPage * modulesPerPage,
