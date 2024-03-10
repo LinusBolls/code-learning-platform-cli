@@ -5,21 +5,21 @@ import { useInterval } from 'usehooks-ts';
 export function useElementSize(ref: any) {
   const [elementSize, setElementSize] = useState({ width: 0, height: 0 });
 
-  useInterval(() => {
+  function check() {
     if (ref.current) {
       const size = measureElement(ref.current);
 
-      setElementSize(size);
+      if (
+        size.width !== elementSize.width ||
+        size.height !== elementSize.height
+      )
+        setElementSize(size);
     }
-  }, 100);
+  }
+  // to catch if the ref element resizes, which wouldn't affect the ref
+  useInterval(check, 100);
 
-  useEffect(() => {
-    if (ref.current) {
-      const size = measureElement(ref.current);
-
-      setElementSize(size);
-    }
-  }, [ref]);
+  useEffect(check, [ref]);
 
   return elementSize;
 }
