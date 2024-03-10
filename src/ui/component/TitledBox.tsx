@@ -2,6 +2,7 @@ import { BoxStyle } from 'cli-boxes';
 import { Box, BoxProps } from 'ink';
 import React from 'react';
 
+import { useTheme } from '../../services/useTheme/index.js';
 import Divider, { DividerProps } from './Divider.js';
 
 export interface TitledBoxProps
@@ -26,18 +27,26 @@ const emptyBoxStyle: BoxStyle = {
 
 /**
  * todo: respect borderTopDimColor, borderDimColor
+ *
+ * pass `borderStyle={null}` for no border
  */
 export default function TitledBox({
   children,
   title,
   titlePosition,
   titleProps,
+  flexDirection = 'column',
   ...rest
 }: TitledBoxProps) {
+  const { theme } = useTheme();
+
   const borderStyle =
-    rest.borderTop === false
-      ? emptyBoxStyle
-      : rest.borderStyle ?? emptyBoxStyle;
+    rest.borderStyle === null ? emptyBoxStyle : rest.borderStyle ?? 'single';
+
+  const topBorderStyle = rest.borderTop === false ? emptyBoxStyle : borderStyle;
+
+  const borderColor =
+    rest.borderColor === null ? undefined : theme.card.border.default;
 
   return (
     <Box flexDirection="column">
@@ -45,13 +54,19 @@ export default function TitledBox({
         title={title}
         titlePosition={titlePosition ?? 'start'}
         titleOffset={rest.titleOffset ?? 1}
-        titleProps={titleProps}
-        color={rest.borderTopColor ?? rest.borderColor}
+        titleProps={titleProps ?? { color: theme.card.heading.default }}
+        color={rest.borderTopColor ?? borderColor}
         startDir="down"
         endDir="down"
-        borderStyle={borderStyle}
+        borderStyle={topBorderStyle}
       />
-      <Box {...rest} borderTop={false}>
+      <Box
+        borderColor={borderColor}
+        borderStyle={borderStyle}
+        {...rest}
+        borderTop={false}
+        flexDirection={flexDirection}
+      >
         {children}
       </Box>
     </Box>

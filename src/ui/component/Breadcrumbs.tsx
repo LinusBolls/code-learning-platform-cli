@@ -18,15 +18,8 @@ export default function Breadcrumbs({
   const { theme } = useTheme();
   return (
     <Box gap={1}>
-      <Divider
-        title={steps.join('/')}
-        titlePosition="start"
-        color={theme.card.border.default}
-        titleProps={{ color: theme.card.heading.default }}
-      />
-      {isLoading && !isError && (
-        <LoadingSpinner type="dots" color={theme.text.secondary} />
-      )}
+      <Divider title={steps.join('/')} titlePosition="start" />
+      {isLoading && !isError && <LoadingSpinner />}
       {isError && <Text color={theme.text.default}>⚠</Text>}
     </Box>
   );

@@ -70,14 +70,7 @@ export default function Dashboard({
       <Breadcrumbs steps={['Dashboard']} />
       <Box gap={1} paddingTop={1}>
         <Box flexDirection="column" gap={1} flexGrow={1}>
-          <TitledBox
-            title="My Semester"
-            borderColor={theme.card.border.default}
-            titleProps={{ color: theme.card.heading.default }}
-            flexDirection="column"
-            borderStyle="single"
-            minHeight={4}
-          >
+          <TitledBox title="My Semester" minHeight={4}>
             <Box flexGrow={1} alignItems="center" justifyContent="center">
               <Text color={theme.text.secondary}>Coming soon</Text>
             </Box>
@@ -88,10 +81,6 @@ export default function Dashboard({
                 ? `Study Progress (${totalEcts.collectedECTS} / ${totalEcts.totalECTSNeeded} ECTS)`
                 : 'Study Progress - Loading'
             }
-            borderColor={theme.card.border.default}
-            titleProps={{ color: theme.card.heading.default }}
-            flexDirection="column"
-            borderStyle="single"
             paddingX={2}
             paddingY={1}
             minHeight={boxMinHeight}
@@ -137,32 +126,18 @@ export default function Dashboard({
               </>
             ) : (
               <Box height={20} alignItems="center" justifyContent="center">
-                <LoadingSpinner type="dots" color={theme.text.secondary} />
+                <LoadingSpinner />
               </Box>
             )}
           </TitledBox>
-          <TitledBox
-            title="My upcoming Events"
-            borderColor={theme.card.border.default}
-            titleProps={{ color: theme.card.heading.default }}
-            flexDirection="column"
-            borderStyle="single"
-            minHeight={4}
-          >
+          <TitledBox title="My upcoming Events" minHeight={4}>
             <Box flexGrow={1} alignItems="center" justifyContent="center">
               <Text color={theme.text.secondary}>Coming soon</Text>
             </Box>
           </TitledBox>
         </Box>
         <Box flexDirection="column" gap={1} flexGrow={1}>
-          <TitledBox
-            title="Important Semester Dates"
-            borderColor={theme.card.border.default}
-            titleProps={{ color: theme.card.heading.default }}
-            flexDirection="column"
-            borderStyle="single"
-            minHeight={4}
-          >
+          <TitledBox title="Important Semester Dates" minHeight={4}>
             {importantSemesterDates ? (
               <Box
                 flexGrow={1}
@@ -182,42 +157,21 @@ export default function Dashboard({
               </Box>
             ) : (
               <Box alignItems="center" justifyContent="center" flexGrow={1}>
-                <LoadingSpinner type="dots" color={theme.text.secondary} />
+                <LoadingSpinner />
               </Box>
             )}
           </TitledBox>
-          <TitledBox
-            title="My upcoming Assessments"
-            borderColor={theme.card.border.default}
-            titleProps={{ color: theme.card.heading.default }}
-            flexDirection="column"
-            borderStyle="single"
-            minHeight={4}
-          >
+          <TitledBox title="My upcoming Assessments" minHeight={4}>
             <Box flexGrow={1} alignItems="center" justifyContent="center">
               <Text color={theme.text.secondary}>Coming soon</Text>
             </Box>
           </TitledBox>
-          <TitledBox
-            title="My Project Updates"
-            borderColor={theme.card.border.default}
-            titleProps={{ color: theme.card.heading.default }}
-            flexDirection="column"
-            borderStyle="single"
-            minHeight={4}
-          >
+          <TitledBox title="My Project Updates" minHeight={4}>
             <Box flexGrow={1} alignItems="center" justifyContent="center">
               <Text color={theme.text.secondary}>Coming soon</Text>
             </Box>
           </TitledBox>
-          <TitledBox
-            title="My Projects"
-            borderColor={theme.card.border.default}
-            titleProps={{ color: theme.card.heading.default }}
-            flexDirection="column"
-            borderStyle="single"
-            minHeight={4}
-          >
+          <TitledBox title="My Projects" minHeight={4}>
             {myProjects ? (
               <Box
                 flexGrow={1}
@@ -237,7 +191,7 @@ export default function Dashboard({
               </Box>
             ) : (
               <Box alignItems="center" justifyContent="center" flexGrow={1}>
-                <LoadingSpinner type="dots" color={theme.text.secondary} />
+                <LoadingSpinner />
               </Box>
             )}
           </TitledBox>
@@ -260,7 +214,7 @@ function EctsProgressItem({
 
   return (
     <Box flexDirection="column">
-      <Text>
+      <Text color={theme.text.default}>
         {title}{' '}
         <Text color={theme.text.secondary}>
           ({data.collectedECTS} / {data.totalECTSNeeded} ECTS)

@@ -22,7 +22,7 @@ export default function Login({ onAccessTokenSubmit }: LoginProps) {
     <Box flexDirection="column">
       <BigText text="CODE" colors={[theme.primary.main]} />
       <Box>
-        <Text>
+        <Text color={theme.text.default}>
           Please paste your{' '}
           <Link url="https://github.com/linusBolls/code-university-sdk">
             <Text color={theme.link.main} underline={false}>

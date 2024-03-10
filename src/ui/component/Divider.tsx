@@ -90,7 +90,7 @@ export default function Divider({
     <Box ref={dividerRef} flexGrow={1}>
       <Text wrap="end" color={color ?? theme.card.border.default}>
         {start + char.repeat(Math.max(padStart + titleOffset, 0))}
-        <Text bold color={color ?? theme.card.border.default} {...titleProps}>
+        <Text bold color={color ?? theme.card.heading.default} {...titleProps}>
           {title}
         </Text>
         {char.repeat(Math.max(padEnd - titleOffset, 0)) + end}

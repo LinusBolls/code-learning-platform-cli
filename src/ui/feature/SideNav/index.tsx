@@ -49,15 +49,7 @@ export default function SideNav({ itemGroups, activeItemIdx }: SideNavProps) {
   const { theme } = useTheme();
 
   return (
-    <TitledBox
-      title="Learning Platform"
-      borderColor={theme.card.border.default}
-      titleProps={{ color: theme.card.heading.default }}
-      flexDirection="column"
-      borderStyle="single"
-      paddingTop={1}
-      width={21}
-    >
+    <TitledBox title="Learning Platform" paddingTop={1} width={21}>
       {itemGroups.map((itemGroup, index) => {
         const isLast = index === itemGroups.length - 1;
 

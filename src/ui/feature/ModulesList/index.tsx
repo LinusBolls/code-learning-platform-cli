@@ -60,7 +60,7 @@ export default function ModulesList({
         />
         <Box alignItems="center" justifyContent="center" flexGrow={1}>
           <Text color={theme.text.secondary}>Loading modules</Text>
-          <LoadingSpinner type="simpleDots" color={theme.text.secondary} />
+          <LoadingSpinner type="simpleDots" />
         </Box>
       </Box>
     );
