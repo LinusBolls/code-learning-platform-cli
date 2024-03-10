@@ -8,8 +8,13 @@ import { render } from 'ink';
 import React from 'react';
 
 import App from './app.js';
-import { ExecutionContext } from './services/cli/index.js';
+import {
+  clearTerminalOnStartup,
+  ExecutionContext,
+} from './services/cli/index.js';
 import { writeJsonCacheSync } from './services/useFileSystem/index.js';
+
+clearTerminalOnStartup();
 
 render(
   <QueryClientProvider
