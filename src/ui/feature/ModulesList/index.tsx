@@ -3,6 +3,7 @@ import React from 'react';
 
 import { useLearningPlatformModules } from '../../../services/useLearningPlatform/index.js';
 import { useTheme } from '../../../services/useTheme/index.js';
+import Breadcrumbs from '../../component/Breadcrumbs.js';
 import Divider from '../../component/Divider.js';
 import LoadingSpinner from '../../component/LoadingSpinner.js';
 import PaginationIndicator from '../../component/PaginationIndicator.js';
@@ -45,17 +46,7 @@ export default function ModulesList({
   if (isLoading)
     return (
       <Box flexDirection="column" flexGrow={1}>
-        <Box gap={1}>
-          <Divider
-            title="Modules"
-            titlePosition="start"
-            color={theme.card.border.default}
-            titleProps={{ color: theme.card.heading.default }}
-          />
-          {modulesQuery.isFetching && (
-            <LoadingSpinner type="dots" color={theme.text.secondary} />
-          )}
-        </Box>
+        <Breadcrumbs steps={['Modules']} isLoading={modulesQuery.isFetching} />
         <Box alignItems="center" justifyContent="center" flexGrow={1}>
           <Text color={theme.text.secondary}>Loading modules</Text>
           <LoadingSpinner type="simpleDots" color={theme.text.secondary} />
@@ -65,17 +56,7 @@ export default function ModulesList({
 
   return (
     <Box flexDirection="column" flexGrow={1}>
-      <Box gap={1}>
-        <Divider
-          title="Modules"
-          titlePosition="start"
-          color={theme.card.border.default}
-          titleProps={{ color: theme.card.heading.default }}
-        />
-        {modulesQuery.isFetching && (
-          <LoadingSpinner type="dots" color={theme.text.secondary} />
-        )}
-      </Box>
+      <Breadcrumbs steps={['Modules']} isLoading={modulesQuery.isFetching} />
       <SearchBar
         isActive={isSearchFocused}
         placeholder="S Search by name, department, or coordinator"

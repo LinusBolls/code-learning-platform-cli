@@ -2,7 +2,7 @@ import { Box, Text } from 'ink';
 import React from 'react';
 
 import { useTheme } from '../../../services/useTheme/index.js';
-import Divider from '../../component/Divider.js';
+import Breadcrumbs from '../../component/Breadcrumbs.js';
 
 export interface ModuleInfoProps {
   module: {
@@ -17,12 +17,7 @@ export default function ModuleInfo({ module }: ModuleInfoProps) {
   if (!module)
     return (
       <Box flexDirection="column" flexGrow={1}>
-        <Divider
-          title={'Modules/Unknown'}
-          titlePosition="start"
-          color={theme.card.border.default}
-          titleProps={{ color: theme.card.heading.default }}
-        />
+        <Breadcrumbs steps={['Modules', 'Unknown']} />
         <Box
           flexDirection="column"
           flexGrow={1}
@@ -36,12 +31,7 @@ export default function ModuleInfo({ module }: ModuleInfoProps) {
 
   return (
     <Box flexDirection="column" flexGrow={1}>
-      <Divider
-        title={'Modules/' + module.shortCode}
-        titlePosition="start"
-        color={theme.card.border.default}
-        titleProps={{ color: theme.card.heading.default }}
-      />
+      <Breadcrumbs steps={['Modules', module.shortCode]} />
       <Text color={theme.text.default} wrap="wrap">
         {module.content}
       </Text>
