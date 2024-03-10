@@ -1,11 +1,22 @@
-import { useLearningPlatformMyModuleData } from '../../../services/useLearningPlatform/index.js';
+import {
+  useLearningPlatformImportantSemesterDates,
+  useLearningPlatformMyModuleData,
+  useLearningPlatformMyProjects,
+} from '../../../services/useLearningPlatform/index.js';
 
 export default function useDashboard() {
-  const query = useLearningPlatformMyModuleData();
+  const myModuleData = useLearningPlatformMyModuleData();
 
-  delete query.data?.myModuleData.__typename;
+  delete myModuleData.data?.myModuleData.__typename;
+
+  const myProjects = useLearningPlatformMyProjects();
+
+  const importantSemesterDates = useLearningPlatformImportantSemesterDates();
 
   return {
-    ectsData: query.data?.myModuleData,
+    ectsData: myModuleData.data?.myModuleData,
+    myProjects: myProjects.data?.myProjects,
+    importantSemesterDates:
+      importantSemesterDates.data?.currentSemester.importantSemesterDates,
   };
 }

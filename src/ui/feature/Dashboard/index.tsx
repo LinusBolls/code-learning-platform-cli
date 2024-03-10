@@ -3,6 +3,7 @@ import React from 'react';
 
 import { useTheme } from '../../../services/useTheme/index.js';
 import Breadcrumbs from '../../component/Breadcrumbs.js';
+import Divider from '../../component/Divider.js';
 import LoadingSpinner from '../../component/LoadingSpinner.js';
 import Progress from '../../component/Progress.js';
 import TitledBox from '../../component/TitledBox.js';
@@ -22,10 +23,34 @@ export interface EctsData {
   elective: EctsDataPoint;
 }
 
+export interface Project {
+  isApproved: boolean;
+  isArchived: boolean;
+  title: string;
+  description: string;
+  coverUrl: string;
+  isLookingForTeammates: boolean;
+  tags: { name: string; category: string | null }[];
+  semesters: { name: string }[];
+  originator: { name: string };
+  isFutureProject: boolean;
+  activeMemberships: {
+    student: { firstName: string; lastName: string; avatarUrl: string };
+  }[];
+}
+
 export interface DashboardProps {
   ectsData: EctsData | null;
+  myProjects: Project[] | null;
+  importantSemesterDates:
+    | { title: string; subtitle: string; date: string }[]
+    | null;
 }
-export default function Dashboard({ ectsData }: DashboardProps) {
+export default function Dashboard({
+  ectsData,
+  myProjects,
+  importantSemesterDates,
+}: DashboardProps) {
   const { theme } = useTheme();
 
   const boxMinHeight = 5;
@@ -54,7 +79,7 @@ export default function Dashboard({ ectsData }: DashboardProps) {
             minHeight={4}
           >
             <Box flexGrow={1} alignItems="center" justifyContent="center">
-              <Text color={theme.text.secondary}>No Data</Text>
+              <Text color={theme.text.secondary}>Coming soon</Text>
             </Box>
           </TitledBox>
           <TitledBox
@@ -125,7 +150,7 @@ export default function Dashboard({ ectsData }: DashboardProps) {
             minHeight={4}
           >
             <Box flexGrow={1} alignItems="center" justifyContent="center">
-              <Text color={theme.text.secondary}>No Data</Text>
+              <Text color={theme.text.secondary}>Coming soon</Text>
             </Box>
           </TitledBox>
         </Box>
@@ -138,9 +163,28 @@ export default function Dashboard({ ectsData }: DashboardProps) {
             borderStyle="single"
             minHeight={4}
           >
-            <Box flexGrow={1} alignItems="center" justifyContent="center">
-              <Text color={theme.text.secondary}>No Data</Text>
-            </Box>
+            {importantSemesterDates ? (
+              <Box
+                flexGrow={1}
+                flexDirection="column"
+                paddingX={2}
+                paddingY={1}
+              >
+                {importantSemesterDates?.map((date, idx) => {
+                  const isLast = idx === importantSemesterDates.length - 1;
+                  return (
+                    <Box flexDirection="column" key={idx} flexGrow={1}>
+                      <Text color={theme.text.default}>{date.title}</Text>
+                      {!isLast && <Divider />}
+                    </Box>
+                  );
+                })}
+              </Box>
+            ) : (
+              <Box alignItems="center" justifyContent="center" flexGrow={1}>
+                <LoadingSpinner type="dots" color={theme.text.secondary} />
+              </Box>
+            )}
           </TitledBox>
           <TitledBox
             title="My upcoming Assessments"
@@ -151,7 +195,7 @@ export default function Dashboard({ ectsData }: DashboardProps) {
             minHeight={4}
           >
             <Box flexGrow={1} alignItems="center" justifyContent="center">
-              <Text color={theme.text.secondary}>No Data</Text>
+              <Text color={theme.text.secondary}>Coming soon</Text>
             </Box>
           </TitledBox>
           <TitledBox
@@ -163,7 +207,7 @@ export default function Dashboard({ ectsData }: DashboardProps) {
             minHeight={4}
           >
             <Box flexGrow={1} alignItems="center" justifyContent="center">
-              <Text color={theme.text.secondary}>No Data</Text>
+              <Text color={theme.text.secondary}>Coming soon</Text>
             </Box>
           </TitledBox>
           <TitledBox
@@ -174,9 +218,28 @@ export default function Dashboard({ ectsData }: DashboardProps) {
             borderStyle="single"
             minHeight={4}
           >
-            <Box flexGrow={1} alignItems="center" justifyContent="center">
-              <Text color={theme.text.secondary}>No Data</Text>
-            </Box>
+            {myProjects ? (
+              <Box
+                flexGrow={1}
+                flexDirection="column"
+                paddingX={2}
+                paddingY={1}
+              >
+                {myProjects?.map((project, idx) => {
+                  const isLast = idx === myProjects.length - 1;
+                  return (
+                    <Box flexDirection="column" key={idx} flexGrow={1}>
+                      <Text color={theme.text.default}>{project.title}</Text>
+                      {!isLast && <Divider />}
+                    </Box>
+                  );
+                })}
+              </Box>
+            ) : (
+              <Box alignItems="center" justifyContent="center" flexGrow={1}>
+                <LoadingSpinner type="dots" color={theme.text.secondary} />
+              </Box>
+            )}
           </TitledBox>
         </Box>
       </Box>

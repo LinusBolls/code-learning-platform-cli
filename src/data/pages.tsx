@@ -16,7 +16,7 @@ function Placeholder({ title }: { title: string }) {
     <Box flexDirection="column" flexGrow={1}>
       <Breadcrumbs steps={[title]} />
       <Box alignItems="center" justifyContent="center" flexGrow={1}>
-        <Text color={theme.text.secondary}>Coming soon ;)</Text>
+        <Text color={theme.text.secondary}>Coming soon</Text>
       </Box>
     </Box>
   );

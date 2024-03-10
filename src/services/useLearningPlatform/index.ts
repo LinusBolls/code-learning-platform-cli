@@ -264,3 +264,84 @@ export const useLearningPlatformMyModuleData = () => {
     enabled,
   });
 };
+
+export const useLearningPlatformImportantSemesterDates = () => {
+  const { learningPlatform, enabled } = useLearningPlatform();
+
+  return useQuery<{ currentSemester: { importantSemesterDates: any } }>({
+    queryFn: async () => {
+      const data = await learningPlatform!.raw
+        .query(`query importantSemesterDates {
+        currentSemester {
+          importantSemesterDates {
+            title
+            subtitle
+            date
+            __typename
+          }
+          __typename
+        }
+      }`);
+      return data as any;
+    },
+    queryKey: ['learningPlatform', 'importantSemesterDates'],
+    enabled,
+  });
+};
+
+export const useLearningPlatformMyProjects = () => {
+  const { learningPlatform, enabled } = useLearningPlatform();
+
+  return useQuery<{ myProjects: any }>({
+    queryFn: async () => {
+      const data = await learningPlatform!.raw.query(`query myProjects {
+        myProjects {
+          ...ProjectCardItem
+          __typename
+        }
+      }
+      
+      fragment ProjectCardItem on Project {
+        id
+        isApproved
+        isArchived
+        title
+        description
+        coverUrl
+        isLookingForTeammates
+        tags {
+          id
+          name
+          category
+          __typename
+        }
+        semesters {
+          id
+          name
+          __typename
+        }
+        originator {
+          id
+          name
+          __typename
+        }
+        isFutureProject
+        activeMemberships {
+          id
+          student {
+            id
+            firstName
+            lastName
+            avatarUrl
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }`);
+      return data;
+    },
+    queryKey: ['learningPlatform', 'myProjects'],
+    enabled,
+  });
+};
