@@ -212,56 +212,55 @@ export const useLearningPlatformModules = () => {
     queryFn: async () => {
       return await learningPlatform!.raw.query(`
       query {
-      	modules {
-          title
-          shortCode
-          moduleIdentifier
-          simpleShortCode
-          department {
-            abbreviation
+export const useLearningPlatformMyModuleData = () => {
+  const { learningPlatform, enabled } = useLearningPlatform();
+
+  return useQuery<{ myModuleData: any }>({
+    queryFn: async () => {
+      const data = await learningPlatform!.raw.query(
+        `query myModuleData {
+        myModuleData {
+          capstone {
+            ...MyECTSStatsData
+            __typename
           }
-          content
-          qualificationGoals
-          ects
-          contactTime
-          selfStudyTime
-          weeklyHours
-          graded
-          retired
-      		coordinator {
-      			name
-      		}
-          prerequisites {
-            id
+          thesis {
+            ...MyECTSStatsData
+            __typename
           }
-          prerequisiteFor {
-            id
+          sts {
+            ...MyECTSStatsData
+            __typename
           }
-          replacements {
-              id
+          orientation {
+            ...MyECTSStatsData
+            __typename
           }
-          replacementFor {
-              id
+          mandatory {
+            ...MyECTSStatsData
+            __typename
           }
-          semesterModules {
-            allowsRegistration
-            semester {
-              isActive
-            }
-            isDraft
-            hasDuplicate
-            status
+          compulsoryElective {
+            ...MyECTSStatsData
+            __typename
           }
-          workload
-          id
-          createdAt
-          updatedAt
-      	}
-      }`);
+          elective {
+            ...MyECTSStatsData
+            __typename
+          }
+          __typename
+        }
+      }
+      
+      fragment MyECTSStatsData on MyECTSStats {
+        collectedECTS
+        totalECTSNeeded
+        __typename
+      }`
+      );
+      return data;
     },
-    queryKey: ['learningPlatform', 'modules'],
+    queryKey: ['learningPlatform', 'myModuleData'],
     enabled,
-    retry: false,
-    initialData: readJsonCacheSync('learningPlatform-modules.cache.json'),
   });
 };

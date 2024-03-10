@@ -4,6 +4,7 @@ import React from 'react';
 import { useTheme } from '../services/useTheme/index.js';
 import Breadcrumbs from '../ui/component/Breadcrumbs.js';
 import Dashboard from '../ui/feature/Dashboard/index.js';
+import useDashboard from '../ui/feature/Dashboard/useDashboard.js';
 import ModuleInfo from '../ui/feature/ModuleInfo/index.js';
 import useModuleInfo from '../ui/feature/ModuleInfo/useModuleInfo.js';
 import ModulesList from '../ui/feature/ModulesList/index.js';
@@ -23,7 +24,7 @@ function Placeholder({ title }: { title: string }) {
 
 export const pages = {
   dashboard: {
-    render: () => <Dashboard />,
+    render: () => <Dashboard {...useDashboard()} />,
     id: 'dashboard',
     title: 'Dashboard',
     hotkeys: ['1'],

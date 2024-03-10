@@ -3,14 +3,42 @@ import React from 'react';
 
 import { useTheme } from '../../../services/useTheme/index.js';
 import Breadcrumbs from '../../component/Breadcrumbs.js';
+import LoadingSpinner from '../../component/LoadingSpinner.js';
 import Progress from '../../component/Progress.js';
 import TitledBox from '../../component/TitledBox.js';
 
-export interface DashboardProps {}
-export default function Dashboard() {
+export interface EctsDataPoint {
+  collectedECTS: number;
+  totalECTSNeeded: number;
+}
+
+export interface EctsData {
+  capstone: EctsDataPoint;
+  thesis: EctsDataPoint;
+  sts: EctsDataPoint;
+  orientation: EctsDataPoint;
+  mandatory: EctsDataPoint;
+  compulsoryElective: EctsDataPoint;
+  elective: EctsDataPoint;
+}
+
+export interface DashboardProps {
+  ectsData: EctsData | null;
+}
+export default function Dashboard({ ectsData }: DashboardProps) {
   const { theme } = useTheme();
 
   const boxMinHeight = 5;
+
+  const totalEcts = Object.values(ectsData ?? {}).reduce<EctsDataPoint>(
+    (acc, data) => {
+      return {
+        collectedECTS: acc.collectedECTS + data.collectedECTS,
+        totalECTSNeeded: acc.totalECTSNeeded + data.totalECTSNeeded,
+      };
+    },
+    { collectedECTS: 0, totalECTSNeeded: 0 }
+  );
 
   return (
     <Box flexDirection="column" flexGrow={1}>
@@ -30,7 +58,11 @@ export default function Dashboard() {
             </Box>
           </TitledBox>
           <TitledBox
-            title="Study Progress (49/180 ECTS)"
+            title={
+              ectsData
+                ? `Study Progress (${totalEcts.collectedECTS} / ${totalEcts.totalECTSNeeded} ECTS)`
+                : 'Study Progress - Loading'
+            }
             borderColor={theme.card.border.default}
             titleProps={{ color: theme.card.heading.default }}
             flexDirection="column"
@@ -40,82 +72,49 @@ export default function Dashboard() {
             minHeight={boxMinHeight}
             gap={1}
           >
-            <Box flexDirection="column">
-              <Text>
-                Orientation Semester{' '}
-                <Text color={theme.text.secondary}>(24/24 ECTS)</Text>
-              </Text>
-              <Progress
-                progressFloat={24 / 24}
-                progressColor="#a0d911"
-                trackColor={theme.text.secondary}
-              />
-            </Box>
-            <Box flexDirection="column">
-              <Text>
-                Mandatory Modules{' '}
-                <Text color={theme.text.secondary}>(5/40 ECTS)</Text>
-              </Text>
-              <Progress
-                progressFloat={5 / 40}
-                progressColor="#1890ff"
-                trackColor={theme.text.secondary}
-              />
-            </Box>
-            <Box flexDirection="column">
-              <Text>
-                Compulsory Elective Modules{' '}
-                <Text color={theme.text.secondary}>(0/10 ECTS)</Text>
-              </Text>
-              <Progress
-                progressFloat={0 / 10}
-                progressColor="#1890ff"
-                trackColor={theme.text.secondary}
-              />
-            </Box>
-            <Box flexDirection="column">
-              <Text>
-                Elective Modules{' '}
-                <Text color={theme.text.secondary}>(20/50 ECTS)</Text>
-              </Text>
-              <Progress
-                progressFloat={20 / 50}
-                progressColor="#1890ff"
-                trackColor={theme.text.secondary}
-              />
-            </Box>
-            <Box flexDirection="column">
-              <Text>
-                Mandatory STS Modules{' '}
-                <Text color={theme.text.secondary}>(0/26 ECTS)</Text>
-              </Text>
-              <Progress
-                progressFloat={0 / 26}
-                progressColor="#ffa940"
-                trackColor={theme.text.secondary}
-              />
-            </Box>
-            <Box flexDirection="column">
-              <Text>
-                Thesis <Text color={theme.text.secondary}>(0/15 ECTS)</Text>
-              </Text>
-              <Progress
-                progressFloat={0 / 15}
-                progressColor="#ffa940"
-                trackColor={theme.text.secondary}
-              />
-            </Box>
-            <Box flexDirection="column">
-              <Text>
-                Capstone Project{' '}
-                <Text color={theme.text.secondary}>(0/15 ECTS)</Text>
-              </Text>
-              <Progress
-                progressFloat={0 / 15}
-                progressColor="#ffa940"
-                trackColor={theme.text.secondary}
-              />
-            </Box>
+            {ectsData ? (
+              <>
+                <EctsProgressItem
+                  title="Orientation Semester"
+                  progressColor="#a0d911"
+                  data={ectsData.orientation}
+                />
+                <EctsProgressItem
+                  title="Mandatory Modules"
+                  progressColor="#1890ff"
+                  data={ectsData.mandatory}
+                />
+                <EctsProgressItem
+                  title="Compulsory Elective Modules"
+                  progressColor="#1890ff"
+                  data={ectsData.compulsoryElective}
+                />
+                <EctsProgressItem
+                  title="Elective Modules"
+                  progressColor="#1890ff"
+                  data={ectsData.elective}
+                />
+                <EctsProgressItem
+                  title="MandatorySTS Modules"
+                  progressColor="#1890ff"
+                  data={ectsData.sts}
+                />
+                <EctsProgressItem
+                  title="Thesis"
+                  progressColor="#ffa940"
+                  data={ectsData.thesis}
+                />
+                <EctsProgressItem
+                  title="Capstone Project"
+                  progressColor="#ffa940"
+                  data={ectsData.capstone}
+                />
+              </>
+            ) : (
+              <Box height={20} alignItems="center" justifyContent="center">
+                <LoadingSpinner type="dots" color={theme.text.secondary} />
+              </Box>
+            )}
           </TitledBox>
           <TitledBox
             title="My upcoming Events"
@@ -181,6 +180,34 @@ export default function Dashboard() {
           </TitledBox>
         </Box>
       </Box>
+    </Box>
+  );
+}
+
+function EctsProgressItem({
+  title,
+  progressColor,
+  data,
+}: {
+  title: string;
+  progressColor: string;
+  data: EctsDataPoint;
+}) {
+  const { theme } = useTheme();
+
+  return (
+    <Box flexDirection="column">
+      <Text>
+        {title}{' '}
+        <Text color={theme.text.secondary}>
+          ({data.collectedECTS} / {data.totalECTSNeeded} ECTS)
+        </Text>
+      </Text>
+      <Progress
+        progressFloat={data.collectedECTS / data.totalECTSNeeded}
+        progressColor={progressColor}
+        trackColor={theme.text.secondary}
+      />
     </Box>
   );
 }
