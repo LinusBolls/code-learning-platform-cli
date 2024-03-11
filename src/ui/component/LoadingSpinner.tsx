@@ -49,3 +49,17 @@ export function LoadingText({ text = 'Loading' }: { text?: string }) {
     </Box>
   );
 }
+
+export function ErrorText({
+  text = 'Something went wrong.',
+}: {
+  text?: string;
+}) {
+  const { theme } = useTheme();
+
+  return (
+    <Box alignItems="center" justifyContent="center" flexGrow={1}>
+      <Text color={theme.text.secondary}>{text}</Text>
+    </Box>
+  );
+}

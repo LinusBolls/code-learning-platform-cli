@@ -4,7 +4,7 @@ import React from 'react';
 import { useTheme } from '../../../services/useTheme/index.js';
 import Breadcrumbs, { BreadcrumbsProps } from '../../component/Breadcrumbs.js';
 import Divider from '../../component/Divider.js';
-import { LoadingText } from '../../component/LoadingSpinner.js';
+import { ErrorText, LoadingText } from '../../component/LoadingSpinner.js';
 import PaginationIndicator from '../../component/PaginationIndicator.js';
 import SearchBar from '../../component/SearchBar.js';
 
@@ -23,7 +23,7 @@ export interface ModulesListProps {
   isLoading?: boolean;
   modulesPerPage?: number;
   activeModuleId?: string | null;
-  modules?: Module[];
+  modules: { data?: Module[]; isLoading: boolean; isError: boolean };
   numPages?: number;
   currentPage?: number;
   isSearchFocused?: boolean;
@@ -34,10 +34,9 @@ export interface ModulesListProps {
   breadcrumbsProps?: Omit<BreadcrumbsProps, 'steps'>;
 }
 export default function ModulesList({
-  isLoading = false,
   modulesPerPage = 5,
   activeModuleId,
-  modules = [],
+  modules,
   numPages = 1,
   currentPage = 0,
   isSearchFocused = false,
@@ -49,11 +48,19 @@ export default function ModulesList({
 }: ModulesListProps) {
   const { theme } = useTheme();
 
-  if (isLoading)
+  if (modules.isLoading)
     return (
       <Box flexDirection="column" flexGrow={1}>
         <Breadcrumbs steps={['Modules']} {...breadcrumbsProps} />
         <LoadingText text="Loading modules" />
+      </Box>
+    );
+
+  if (modules.isError)
+    return (
+      <Box flexDirection="column" flexGrow={1}>
+        <Breadcrumbs steps={['Modules']} {...breadcrumbsProps} />
+        <ErrorText />
       </Box>
     );
 
@@ -79,11 +86,11 @@ export default function ModulesList({
         // height of the modules + height of the dividers - vertical padding
         height={modulesPerPage * 2 + (modulesPerPage - 1) + 2}
       >
-        {modules.length < 1 && (
+        {modules.data!.length < 1 && (
           <Text color={theme.text.secondary}>No modules found.</Text>
         )}
-        {modules.map((module, idx) => {
-          const isLast = idx === modules.length - 1;
+        {modules.data!.map((module, idx) => {
+          const isLast = idx === modules.data!.length - 1;
 
           return (
             <Box

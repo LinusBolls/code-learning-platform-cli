@@ -4,7 +4,7 @@ import React from 'react';
 import { useTheme } from '../../../services/useTheme/index.js';
 import Breadcrumbs, { BreadcrumbsProps } from '../../component/Breadcrumbs.js';
 import Divider from '../../component/Divider.js';
-import { LoadingText } from '../../component/LoadingSpinner.js';
+import { ErrorText, LoadingText } from '../../component/LoadingSpinner.js';
 import Progress from '../../component/Progress.js';
 import TitledBox from '../../component/TitledBox.js';
 
@@ -40,24 +40,34 @@ export interface Project {
 }
 
 export interface DashboardProps {
-  ectsData?: EctsData | null;
-  myProjects?: Project[] | null;
-  importantSemesterDates?:
-    | { title: string; subtitle: string; date: string }[]
-    | null;
+  myModuleData: {
+    isLoading: boolean;
+    isError: boolean;
+    data?: EctsData;
+  };
+  myProjects: {
+    isLoading: boolean;
+    isError: boolean;
+    data?: Project[];
+  };
+  importantSemesterDates: {
+    isLoading: boolean;
+    isError: boolean;
+    data?: { title: string; subtitle: string; date: string }[];
+  };
   breadcrumbsProps?: Omit<BreadcrumbsProps, 'steps'>;
 }
 export default function Dashboard({
-  ectsData,
+  myModuleData,
   myProjects,
   importantSemesterDates,
   breadcrumbsProps,
 }: DashboardProps) {
   const { theme } = useTheme();
 
-  const boxMinHeight = 5;
-
-  const totalEcts = Object.values(ectsData ?? {}).reduce<EctsDataPoint>(
+  const totalEcts = Object.values(
+    myModuleData.data ?? {}
+  ).reduce<EctsDataPoint>(
     (acc, data) => {
       return {
         collectedECTS: acc.collectedECTS + data.collectedECTS,
@@ -79,57 +89,55 @@ export default function Dashboard({
           </TitledBox>
           <TitledBox
             title={
-              ectsData
+              myModuleData.data
                 ? `Study Progress (${totalEcts.collectedECTS} / ${totalEcts.totalECTSNeeded} ECTS)`
-                : 'Study Progress - Loading'
+                : 'Study Progress'
             }
             paddingX={2}
             paddingY={1}
-            minHeight={boxMinHeight}
+            minHeight={20}
             gap={1}
           >
-            {ectsData ? (
+            {myModuleData.isLoading && <LoadingText />}
+            {myModuleData.isError && <ErrorText />}
+            {myModuleData.data && (
               <>
                 <EctsProgressItem
                   title="Orientation Semester"
                   progressColor={theme.module.orientation.main}
-                  data={ectsData.orientation}
+                  data={myModuleData.data.orientation}
                 />
                 <EctsProgressItem
                   title="Mandatory Modules"
                   progressColor={theme.module.core.main}
-                  data={ectsData.mandatory}
+                  data={myModuleData.data.mandatory}
                 />
                 <EctsProgressItem
                   title="Compulsory Elective Modules"
                   progressColor={theme.module.core.main}
-                  data={ectsData.compulsoryElective}
+                  data={myModuleData.data.compulsoryElective}
                 />
                 <EctsProgressItem
                   title="Elective Modules"
                   progressColor={theme.module.core.main}
-                  data={ectsData.elective}
+                  data={myModuleData.data.elective}
                 />
                 <EctsProgressItem
                   title="MandatorySTS Modules"
                   progressColor={theme.module.core.main}
-                  data={ectsData.sts}
+                  data={myModuleData.data.sts}
                 />
                 <EctsProgressItem
                   title="Thesis"
                   progressColor={theme.module.synthesis.main}
-                  data={ectsData.thesis}
+                  data={myModuleData.data.thesis}
                 />
                 <EctsProgressItem
                   title="Capstone Project"
                   progressColor={theme.module.synthesis.main}
-                  data={ectsData.capstone}
+                  data={myModuleData.data.capstone}
                 />
               </>
-            ) : (
-              <Box height={20} alignItems="center" justifyContent="center">
-                <LoadingText />
-              </Box>
             )}
           </TitledBox>
           <TitledBox title="My upcoming Events" minHeight={4}>
@@ -140,15 +148,18 @@ export default function Dashboard({
         </Box>
         <Box flexDirection="column" gap={1} flexGrow={1}>
           <TitledBox title="Important Semester Dates" minHeight={4}>
-            {importantSemesterDates ? (
+            {importantSemesterDates.isLoading && <LoadingText />}
+            {importantSemesterDates.isError && <ErrorText />}
+            {importantSemesterDates.data && (
               <Box
                 flexGrow={1}
                 flexDirection="column"
                 paddingX={2}
                 paddingY={1}
               >
-                {importantSemesterDates?.map((date, idx) => {
-                  const isLast = idx === importantSemesterDates.length - 1;
+                {importantSemesterDates.data.map((date, idx) => {
+                  const isLast =
+                    idx === importantSemesterDates.data!.length - 1;
                   return (
                     <Box flexDirection="column" key={idx} flexGrow={1}>
                       <Text color={theme.text.default}>{date.title}</Text>
@@ -156,10 +167,6 @@ export default function Dashboard({
                     </Box>
                   );
                 })}
-              </Box>
-            ) : (
-              <Box alignItems="center" justifyContent="center" flexGrow={1}>
-                <LoadingText />
               </Box>
             )}
           </TitledBox>
@@ -174,15 +181,17 @@ export default function Dashboard({
             </Box>
           </TitledBox>
           <TitledBox title="My Projects" minHeight={4}>
-            {myProjects ? (
+            {myProjects.isLoading && <LoadingText />}
+            {myProjects.isError && <ErrorText />}
+            {myProjects.data && (
               <Box
                 flexGrow={1}
                 flexDirection="column"
                 paddingX={2}
                 paddingY={1}
               >
-                {myProjects?.map((project, idx) => {
-                  const isLast = idx === myProjects.length - 1;
+                {myProjects.data?.map((project, idx) => {
+                  const isLast = idx === myProjects.data!.length - 1;
                   return (
                     <Box flexDirection="column" key={idx} flexGrow={1}>
                       <Text color={theme.text.default}>{project.title}</Text>
@@ -190,10 +199,6 @@ export default function Dashboard({
                     </Box>
                   );
                 })}
-              </Box>
-            ) : (
-              <Box alignItems="center" justifyContent="center" flexGrow={1}>
-                <LoadingText />
               </Box>
             )}
           </TitledBox>

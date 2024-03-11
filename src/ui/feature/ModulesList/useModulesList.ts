@@ -6,6 +6,7 @@ import useInput from '../../../services/useInput/index.js';
 import { useLearningPlatformModules } from '../../../services/useLearningPlatform/index.js';
 import { useNavigation } from '../../../services/useNavigation/index.js';
 import { toModuleViewModel } from '../../util/mapping.js';
+import { ModulesListProps } from './index.js';
 
 const getNumModules = (screenHeight: number) => {
   // 9 lines are taken up by the breadcrumbs, searchbar, and pagination indicator, plus padding
@@ -47,7 +48,7 @@ const modulesListStore = create<ModulesListStore>((set) => ({
   },
 }));
 
-export default function useModulesList(isActive = true) {
+export default function useModulesList(isActive = true): ModulesListProps {
   const store = useStore(modulesListStore);
 
   const modulesQuery = useLearningPlatformModules();
@@ -168,13 +169,16 @@ export default function useModulesList(isActive = true) {
     },
 
     modulesPerPage: modulesPerPage,
-    modules: mappedModules,
+    modules: {
+      isLoading: modulesQuery.isLoading,
+      isError: modulesQuery.isLoadingError,
+      data: mappedModules,
+    },
     numPages,
     currentPage: store.currentPage,
     isSearchFocused: navigation.focusedId === 'modules:search',
     searchQuery: store.searchQuery,
     onSearchQueryChange: store.actions.setSearchQuery,
-    isLoading: modulesQuery.isLoading,
     activeModuleId: navigation.moduleId,
     breadcrumbsProps: {
       isLoading: modulesQuery.isFetching,

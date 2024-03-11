@@ -1,8 +1,9 @@
 import { useLearningPlatformModules } from '../../../services/useLearningPlatform/index.js';
 import { useNavigation } from '../../../services/useNavigation/index.js';
 import { toModuleViewModel } from '../../util/mapping.js';
+import { ModuleInfoProps } from './index.js';
 
-export default function useModuleInfo(isActive = true) {
+export default function useModuleInfo(): ModuleInfoProps {
   const { moduleId } = useNavigation();
 
   const modulesQuery = useLearningPlatformModules();
@@ -12,7 +13,6 @@ export default function useModuleInfo(isActive = true) {
   );
   if (!rawModule) {
     return {
-      isActive,
       module: null,
     };
   }
