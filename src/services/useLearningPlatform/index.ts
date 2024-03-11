@@ -262,6 +262,7 @@ export const useLearningPlatformMyModuleData = () => {
     },
     queryKey: ['learningPlatform', 'myModuleData'],
     enabled,
+    initialData: readJsonCacheSync('learningPlatform-myModuleData.cache.json'),
   });
 };
 
@@ -286,6 +287,9 @@ export const useLearningPlatformImportantSemesterDates = () => {
     },
     queryKey: ['learningPlatform', 'importantSemesterDates'],
     enabled,
+    initialData: readJsonCacheSync(
+      'learningPlatform-importantSemesterDates.cache.json'
+    ),
   });
 };
 
@@ -343,5 +347,6 @@ export const useLearningPlatformMyProjects = () => {
     },
     queryKey: ['learningPlatform', 'myProjects'],
     enabled,
+    initialData: readJsonCacheSync('learningPlatform-myProjects.cache.json'),
   });
 };
