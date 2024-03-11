@@ -1,8 +1,8 @@
-import {
-  useLearningPlatformImportantSemesterDates,
-  useLearningPlatformMyModuleData,
-  useLearningPlatformMyProjects,
-} from '../../../services/useLearningPlatform/index.js';
+import { useLearningPlatformCurrentSemester } from '../../../services/useLearningPlatform/hooks/useLearningPlatformCurrentSemester.js';
+import { useLearningPlatformFollowedProjectUpdates } from '../../../services/useLearningPlatform/hooks/useLearningPlatformFollowedProjectUpdates.js';
+import { useLearningPlatformMyModuleData } from '../../../services/useLearningPlatform/hooks/useLearningPlatformMyModuleData.js';
+import { useLearningPlatformMyProjects } from '../../../services/useLearningPlatform/hooks/useLearningPlatformMyProjects.js';
+import { useLearningPlatformSemesterModuleCard } from '../../../services/useLearningPlatform/hooks/useLearningPlatformSemesterModuleCard.js';
 import { DashboardProps } from './index.js';
 
 export default function useDashboard(): DashboardProps {
@@ -12,9 +12,21 @@ export default function useDashboard(): DashboardProps {
 
   const myProjects = useLearningPlatformMyProjects();
 
-  const importantSemesterDates = useLearningPlatformImportantSemesterDates();
+  const importantSemesterDates = useLearningPlatformCurrentSemester();
 
-  const queries = [myModuleData, myProjects, importantSemesterDates];
+  const followedProjectUpdates = useLearningPlatformFollowedProjectUpdates();
+
+  const semesterModuleCard = useLearningPlatformSemesterModuleCard();
+
+  // TODO: "My upcoming Events", "My upcoming Assessments"
+
+  const queries = [
+    myModuleData,
+    myProjects,
+    importantSemesterDates,
+    followedProjectUpdates,
+    semesterModuleCard,
+  ];
 
   return {
     myModuleData: {
@@ -32,6 +44,16 @@ export default function useDashboard(): DashboardProps {
       isError: importantSemesterDates.isLoadingError,
       data: importantSemesterDates.data?.currentSemester
         ?.importantSemesterDates,
+    },
+    followedProjectUpdates: {
+      isLoading: followedProjectUpdates.isLoading,
+      isError: followedProjectUpdates.isLoadingError,
+      data: followedProjectUpdates.data?.followedProjectUpdates,
+    },
+    mySemesterModules: {
+      isLoading: semesterModuleCard.isLoading,
+      isError: semesterModuleCard.isLoadingError,
+      data: semesterModuleCard.data?.mySemesterModules,
     },
     breadcrumbsProps: {
       isLoading: queries.some((i) => i.isFetching),

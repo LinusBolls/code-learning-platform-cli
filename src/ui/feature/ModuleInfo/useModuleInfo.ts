@@ -1,4 +1,4 @@
-import { useLearningPlatformModules } from '../../../services/useLearningPlatform/index.js';
+import { useLearningPlatformModules } from '../../../services/useLearningPlatform/hooks/useLearningPlatformModules.js';
 import { useNavigation } from '../../../services/useNavigation/index.js';
 import { toModuleViewModel } from '../../util/mapping.js';
 import { ModuleInfoProps } from './index.js';

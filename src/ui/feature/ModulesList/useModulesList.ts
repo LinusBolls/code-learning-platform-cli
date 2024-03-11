@@ -3,7 +3,7 @@ import { create, useStore } from 'zustand';
 
 import { ExecutionContext } from '../../../services/cli/index.js';
 import useInput from '../../../services/useInput/index.js';
-import { useLearningPlatformModules } from '../../../services/useLearningPlatform/index.js';
+import { useLearningPlatformModules } from '../../../services/useLearningPlatform/hooks/useLearningPlatformModules.js';
 import { useNavigation } from '../../../services/useNavigation/index.js';
 import { toModuleViewModel } from '../../util/mapping.js';
 import { ModulesListProps } from './index.js';

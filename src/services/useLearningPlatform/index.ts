@@ -1,16 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
 import {
   LearningPlatformClient,
   LearningPlatformClientOptions,
   LearningPlatformClientType,
-  QueryRes,
 } from 'code-university';
 import fs from 'fs';
 import { join } from 'path';
 import { useEffect } from 'react';
 import { create } from 'zustand';
-
-import { useFileSystem } from '../useFileSystem/index.js';
 
 interface LearningPlatformStore {
   client: LearningPlatformClientType | null;
@@ -202,152 +198,4 @@ export const useLearningPlatform = (options?: UseLearningPlatformOptions) => {
     signInWithAccessToken,
     signOut,
   };
-};
-
-export const useLearningPlatformModules = () => {
-  const { learningPlatform, enabled } = useLearningPlatform();
-
-  const { readJsonCacheSync, writeJsonCacheSync } = useFileSystem();
-
-  return useQuery<{ modules: any[] }>({
-    queryFn: async () => {
-      return await learningPlatform!.raw.query(`
-      query {
-export const useLearningPlatformMyModuleData = () => {
-  const { learningPlatform, enabled } = useLearningPlatform();
-
-  return useQuery<QueryRes<'myModuleData'>>({
-    queryFn: async () => {
-      const data = await learningPlatform!.raw.query(
-        `query myModuleData {
-        myModuleData {
-          capstone {
-            ...MyECTSStatsData
-            __typename
-          }
-          thesis {
-            ...MyECTSStatsData
-            __typename
-          }
-          sts {
-            ...MyECTSStatsData
-            __typename
-          }
-          orientation {
-            ...MyECTSStatsData
-            __typename
-          }
-          mandatory {
-            ...MyECTSStatsData
-            __typename
-          }
-          compulsoryElective {
-            ...MyECTSStatsData
-            __typename
-          }
-          elective {
-            ...MyECTSStatsData
-            __typename
-          }
-          __typename
-        }
-      }
-      
-      fragment MyECTSStatsData on MyECTSStats {
-        collectedECTS
-        totalECTSNeeded
-        __typename
-      }`
-      );
-      return data;
-    },
-    queryKey: ['learningPlatform', 'myModuleData'],
-    enabled,
-    initialData: readJsonCacheSync('learningPlatform-myModuleData.cache.json'),
-  });
-};
-
-export const useLearningPlatformImportantSemesterDates = () => {
-  const { learningPlatform, enabled } = useLearningPlatform();
-
-  return useQuery<QueryRes<'currentSemester'>>({
-    queryFn: async () => {
-      const data = await learningPlatform!.raw
-        .query(`query importantSemesterDates {
-        currentSemester {
-          importantSemesterDates {
-            title
-            subtitle
-            date
-            __typename
-          }
-          __typename
-        }
-      }`);
-      return data;
-    },
-    queryKey: ['learningPlatform', 'importantSemesterDates'],
-    enabled,
-    initialData: readJsonCacheSync(
-      'learningPlatform-importantSemesterDates.cache.json'
-    ),
-  });
-};
-
-export const useLearningPlatformMyProjects = () => {
-  const { learningPlatform, enabled } = useLearningPlatform();
-
-  return useQuery<QueryRes<'myProjects'>>({
-    queryFn: async () => {
-      const data = await learningPlatform!.raw.query(`query myProjects {
-        myProjects {
-          ...ProjectCardItem
-          __typename
-        }
-      }
-      
-      fragment ProjectCardItem on Project {
-        id
-        isApproved
-        isArchived
-        title
-        description
-        coverUrl
-        isLookingForTeammates
-        tags {
-          id
-          name
-          category
-          __typename
-        }
-        semesters {
-          id
-          name
-          __typename
-        }
-        originator {
-          id
-          name
-          __typename
-        }
-        isFutureProject
-        activeMemberships {
-          id
-          student {
-            id
-            firstName
-            lastName
-            avatarUrl
-            __typename
-          }
-          __typename
-        }
-        __typename
-      }`);
-      return data;
-    },
-    queryKey: ['learningPlatform', 'myProjects'],
-    enabled,
-    initialData: readJsonCacheSync('learningPlatform-myProjects.cache.json'),
-  });
 };
