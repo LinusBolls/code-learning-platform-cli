@@ -5,7 +5,7 @@ import { useFileSystem } from '../../useFileSystem/index.js';
 import { useLearningPlatform } from '../index.js';
 
 /**
- * used by the `Dashboard` tab of the Learning Platform
+ * used by the `My upcoming Events` card on the `Dashboard` tab of the Learning Platform
  *
  * the pagination is hardcoded because that's what the learning platform does lmao
  */

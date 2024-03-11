@@ -2,6 +2,8 @@ import { useLearningPlatformCurrentSemester } from '../../../services/useLearnin
 import { useLearningPlatformFollowedProjectUpdates } from '../../../services/useLearningPlatform/hooks/useLearningPlatformFollowedProjectUpdates.js';
 import { useLearningPlatformMyModuleData } from '../../../services/useLearningPlatform/hooks/useLearningPlatformMyModuleData.js';
 import { useLearningPlatformMyProjects } from '../../../services/useLearningPlatform/hooks/useLearningPlatformMyProjects.js';
+import { useLearningPlatformMyUpcomingAssessments } from '../../../services/useLearningPlatform/hooks/useLearningPlatformMyUpcomingAssessments.js';
+import { useLearningPlatformMyUpcomingEvents } from '../../../services/useLearningPlatform/hooks/useLearningPlatformMyUpcomingEvents.js';
 import { useLearningPlatformSemesterModuleCard } from '../../../services/useLearningPlatform/hooks/useLearningPlatformSemesterModuleCard.js';
 import { DashboardProps } from './index.js';
 
@@ -18,7 +20,9 @@ export default function useDashboard(): DashboardProps {
 
   const semesterModuleCard = useLearningPlatformSemesterModuleCard();
 
-  // TODO: "My upcoming Events", "My upcoming Assessments"
+  const myUpcomingEvents = useLearningPlatformMyUpcomingEvents();
+
+  const myUpcomingAssessments = useLearningPlatformMyUpcomingAssessments();
 
   const queries = [
     myModuleData,
@@ -26,6 +30,8 @@ export default function useDashboard(): DashboardProps {
     importantSemesterDates,
     followedProjectUpdates,
     semesterModuleCard,
+    myUpcomingEvents,
+    myUpcomingAssessments,
   ];
 
   return {
@@ -54,6 +60,16 @@ export default function useDashboard(): DashboardProps {
       isLoading: semesterModuleCard.isLoading,
       isError: semesterModuleCard.isLoadingError,
       data: semesterModuleCard.data?.mySemesterModules,
+    },
+    myUpcomingEvents: {
+      isLoading: myUpcomingEvents.isLoading,
+      isError: myUpcomingEvents.isLoadingError,
+      data: myUpcomingEvents.data?.myUpcomingEvents,
+    },
+    myUpcomingAssessments: {
+      isLoading: myUpcomingAssessments.isLoading,
+      isError: myUpcomingAssessments.isLoadingError,
+      data: myUpcomingAssessments.data?.myUpcomingAssessments,
     },
     breadcrumbsProps: {
       isLoading: queries.some((i) => i.isFetching),

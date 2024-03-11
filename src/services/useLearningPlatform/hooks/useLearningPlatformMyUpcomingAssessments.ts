@@ -5,19 +5,20 @@ import { useFileSystem } from '../../useFileSystem/index.js';
 import { useLearningPlatform } from '../index.js';
 
 /**
- * used by the `Dashboard` tab of the Learning Platform
- *
- * todo: this is paginated, and requires variables, so it's not usable yet
+ * used by the `My upcoming Assessments` card of the `Dashboard` tab of the Learning Platform
  */
-export const useLearningPlatformMyUpcomingAssessments = () => {
+export const useLearningPlatformMyUpcomingAssessments = (
+  limit = 20,
+  offset = 0
+) => {
   const { learningPlatform, enabled } = useLearningPlatform();
 
   const { readJsonCacheSync } = useFileSystem();
 
   return useQuery<QueryRes<'myUpcomingAssessments'>>({
     queryFn: async () => {
-      const data = await learningPlatform!.raw
-        .query(`query myUpcomingAssessments($pagination: OffsetPaginationInput) {
+      const data = await learningPlatform!.raw.query(
+        `query myUpcomingAssessments($pagination: OffsetPaginationInput) {
         myUpcomingAssessments(pagination: $pagination) {
           id
           semesterModule {
@@ -45,7 +46,14 @@ export const useLearningPlatformMyUpcomingAssessments = () => {
           __typename
         }
         myUpcomingAssessmentsCount
-      }`);
+      }`,
+        {
+          pagination: {
+            limit,
+            offset,
+          },
+        }
+      );
       return data;
     },
     queryKey: ['learningPlatform', 'myUpcomingAssessments'],

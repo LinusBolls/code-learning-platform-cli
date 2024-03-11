@@ -1,23 +1,28 @@
 import { useQuery } from '@tanstack/react-query';
-import { QueryRes } from 'code-university';
+import { LP, QueryRes } from 'code-university';
 
 import { useFileSystem } from '../../useFileSystem/index.js';
 import { useLearningPlatform } from '../index.js';
 
 /**
  * used by the `Events` and `Academic Events` tabs of the Learning Platform
- *
- * todo: this is paginated, and requires variables, so it's not usable yet
+ * the `Events` tab doesn't specify a type, but `Academic Events` specifies `ACADEMIC`
+ * both always specify a filter
  */
-export const useLearningPlatformEventGroups = () => {
+export const useLearningPlatformEventGroups = (
+  limit = 20,
+  offset = 0,
+  filter?: LP.EventGroupFilter,
+  type?: LP.EventGroupType
+) => {
   const { learningPlatform, enabled } = useLearningPlatform();
 
   const { readJsonCacheSync } = useFileSystem();
 
   return useQuery<QueryRes<'eventGroups'> & QueryRes<'eventGroupsCount'>>({
     queryFn: async () => {
-      const data = await learningPlatform!.raw
-        .query(`query allEventGroups($pagination: OffsetPaginationInput, $filter: EventGroupFilter, $type: EventGroupType) {
+      const data = await learningPlatform!.raw.query(
+        `query allEventGroups($pagination: OffsetPaginationInput, $filter: EventGroupFilter, $type: EventGroupType) {
             eventGroups(pagination: $pagination, filter: $filter, type: $type) {
               ...EventGroupCardItem
               __typename
@@ -106,7 +111,9 @@ export const useLearningPlatformEventGroups = () => {
               __typename
             }
             __typename
-          }`);
+          }`,
+        { pagination: { limit, offset }, filter, type }
+      );
       return data;
     },
     queryKey: ['learningPlatform', 'eventGroups'],

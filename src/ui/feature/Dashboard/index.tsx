@@ -85,6 +85,28 @@ export interface DashboardProps {
         } | null)[]
       | null;
   };
+  myUpcomingEvents: {
+    isLoading: boolean;
+    isError: boolean;
+    data?:
+      | ({
+          title: string;
+          host?: { name: string } | null;
+          location?: string | null;
+        } | null)[]
+      | null;
+  };
+  myUpcomingAssessments: {
+    isLoading: boolean;
+    isError: boolean;
+    data?:
+      | {
+          module?: {
+            title: string;
+          } | null;
+        }[]
+      | null;
+  };
   breadcrumbsProps?: Omit<BreadcrumbsProps, 'steps'>;
 }
 export default function Dashboard({
@@ -93,6 +115,8 @@ export default function Dashboard({
   importantSemesterDates,
   followedProjectUpdates,
   mySemesterModules,
+  myUpcomingEvents,
+  myUpcomingAssessments,
   breadcrumbsProps,
 }: DashboardProps) {
   const { theme } = useTheme();
@@ -128,12 +152,12 @@ export default function Dashboard({
                   paddingX={2}
                   paddingY={1}
                 >
-                  {mySemesterModules.data?.map((update, idx) => {
+                  {mySemesterModules.data?.map((semesterModule, idx) => {
                     const isLast = idx === myProjects.data!.length - 1;
                     return (
                       <Box flexDirection="column" key={idx} flexGrow={1}>
                         <Text color={theme.text.default}>
-                          {update?.module?.title ?? 'Unknown'}
+                          {semesterModule?.module?.title ?? 'Unknown'}
                         </Text>
                         {!isLast && <Divider />}
                       </Box>
@@ -198,7 +222,31 @@ export default function Dashboard({
           </TitledBox>
           <TitledBox title="My upcoming Events" minHeight={4}>
             <Box flexGrow={1} alignItems="center" justifyContent="center">
-              <Text color={theme.text.secondary}>Coming soon</Text>
+              {myUpcomingEvents.isLoading && <LoadingText />}
+              {myUpcomingEvents.isError && <ErrorText />}
+              {myUpcomingEvents.data?.length === 0 && (
+                <Text color={theme.text.secondary}>No data.</Text>
+              )}
+              {(myUpcomingEvents.data?.length ?? 0) > 0 && (
+                <Box
+                  flexGrow={1}
+                  flexDirection="column"
+                  paddingX={2}
+                  paddingY={1}
+                >
+                  {myUpcomingEvents.data?.map((event, idx) => {
+                    const isLast = idx === myProjects.data!.length - 1;
+                    return (
+                      <Box flexDirection="column" key={idx} flexGrow={1}>
+                        <Text color={theme.text.default}>
+                          {event?.title ?? 'Unknown'}
+                        </Text>
+                        {!isLast && <Divider />}
+                      </Box>
+                    );
+                  })}
+                </Box>
+              )}
             </Box>
           </TitledBox>
         </Box>
@@ -233,7 +281,31 @@ export default function Dashboard({
           </TitledBox>
           <TitledBox title="My upcoming Assessments" minHeight={4}>
             <Box flexGrow={1} alignItems="center" justifyContent="center">
-              <Text color={theme.text.secondary}>Coming soon</Text>
+              {myUpcomingAssessments.isLoading && <LoadingText />}
+              {myUpcomingAssessments.isError && <ErrorText />}
+              {myUpcomingAssessments.data?.length === 0 && (
+                <Text color={theme.text.secondary}>No data.</Text>
+              )}
+              {(myUpcomingAssessments.data?.length ?? 0) > 0 && (
+                <Box
+                  flexGrow={1}
+                  flexDirection="column"
+                  paddingX={2}
+                  paddingY={1}
+                >
+                  {myUpcomingAssessments.data?.map((assessment, idx) => {
+                    const isLast = idx === myProjects.data!.length - 1;
+                    return (
+                      <Box flexDirection="column" key={idx} flexGrow={1}>
+                        <Text color={theme.text.default}>
+                          {assessment.module?.title ?? 'Unknown'}
+                        </Text>
+                        {!isLast && <Divider />}
+                      </Box>
+                    );
+                  })}
+                </Box>
+              )}
             </Box>
           </TitledBox>
           <TitledBox title="My Project Updates" minHeight={4}>
@@ -250,12 +322,12 @@ export default function Dashboard({
                   paddingX={2}
                   paddingY={1}
                 >
-                  {followedProjectUpdates.data?.map((update, idx) => {
+                  {followedProjectUpdates.data?.map((projectUpdate, idx) => {
                     const isLast = idx === myProjects.data!.length - 1;
                     return (
                       <Box flexDirection="column" key={idx} flexGrow={1}>
                         <Text color={theme.text.default}>
-                          {update?.title ?? 'Unknown'}
+                          {projectUpdate?.title ?? 'Unknown'}
                         </Text>
                         {!isLast && <Divider />}
                       </Box>
