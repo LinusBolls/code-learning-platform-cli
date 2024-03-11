@@ -3,6 +3,7 @@ import {
   LearningPlatformClient,
   LearningPlatformClientOptions,
   LearningPlatformClientType,
+  QueryRes,
 } from 'code-university';
 import fs from 'fs';
 import { join } from 'path';
@@ -215,7 +216,7 @@ export const useLearningPlatformModules = () => {
 export const useLearningPlatformMyModuleData = () => {
   const { learningPlatform, enabled } = useLearningPlatform();
 
-  return useQuery<{ myModuleData: any }>({
+  return useQuery<QueryRes<'myModuleData'>>({
     queryFn: async () => {
       const data = await learningPlatform!.raw.query(
         `query myModuleData {
@@ -269,7 +270,7 @@ export const useLearningPlatformMyModuleData = () => {
 export const useLearningPlatformImportantSemesterDates = () => {
   const { learningPlatform, enabled } = useLearningPlatform();
 
-  return useQuery<{ currentSemester: { importantSemesterDates: any } }>({
+  return useQuery<QueryRes<'currentSemester'>>({
     queryFn: async () => {
       const data = await learningPlatform!.raw
         .query(`query importantSemesterDates {
@@ -283,7 +284,7 @@ export const useLearningPlatformImportantSemesterDates = () => {
           __typename
         }
       }`);
-      return data as any;
+      return data;
     },
     queryKey: ['learningPlatform', 'importantSemesterDates'],
     enabled,
@@ -296,7 +297,7 @@ export const useLearningPlatformImportantSemesterDates = () => {
 export const useLearningPlatformMyProjects = () => {
   const { learningPlatform, enabled } = useLearningPlatform();
 
-  return useQuery<{ myProjects: any }>({
+  return useQuery<QueryRes<'myProjects'>>({
     queryFn: async () => {
       const data = await learningPlatform!.raw.query(`query myProjects {
         myProjects {

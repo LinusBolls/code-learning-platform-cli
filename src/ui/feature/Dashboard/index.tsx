@@ -28,32 +28,44 @@ export interface Project {
   isArchived: boolean;
   title: string;
   description: string;
-  coverUrl: string;
-  isLookingForTeammates: boolean;
-  tags: { name: string; category: string | null }[];
-  semesters: { name: string }[];
-  originator: { name: string };
-  isFutureProject: boolean;
-  activeMemberships: {
-    student: { firstName: string; lastName: string; avatarUrl: string };
-  }[];
+  coverUrl?: string | null;
+  isLookingForTeammates?: boolean | null;
+  tags: { name: string; category?: string | null }[];
+  semesters?: { name: string }[] | null;
+  originator?: { name: string } | null;
+  isFutureProject?: boolean | null;
+  activeMemberships?:
+    | {
+        student?: {
+          firstName: string;
+          lastName: string;
+          avatarUrl?: string | null;
+        } | null;
+      }[]
+    | null;
 }
 
 export interface DashboardProps {
   myModuleData: {
     isLoading: boolean;
     isError: boolean;
-    data?: EctsData;
+    data?: EctsData | null;
   };
   myProjects: {
     isLoading: boolean;
     isError: boolean;
-    data?: Project[];
+    data?: Project[] | null;
   };
   importantSemesterDates: {
     isLoading: boolean;
     isError: boolean;
-    data?: { title: string; subtitle: string; date: string }[];
+    data?:
+      | (
+          | { title?: string | null; subtitle?: string | null; date?: string }
+          | null
+          | undefined
+        )[]
+      | null;
   };
   breadcrumbsProps?: Omit<BreadcrumbsProps, 'steps'>;
 }
@@ -157,16 +169,18 @@ export default function Dashboard({
                 paddingX={2}
                 paddingY={1}
               >
-                {importantSemesterDates.data.map((date, idx) => {
-                  const isLast =
-                    idx === importantSemesterDates.data!.length - 1;
-                  return (
-                    <Box flexDirection="column" key={idx} flexGrow={1}>
-                      <Text color={theme.text.default}>{date.title}</Text>
-                      {!isLast && <Divider />}
-                    </Box>
-                  );
-                })}
+                {importantSemesterDates.data
+                  .filter(Boolean)
+                  .map((date, idx) => {
+                    const isLast =
+                      idx === importantSemesterDates.data!.length - 1;
+                    return (
+                      <Box flexDirection="column" key={idx} flexGrow={1}>
+                        <Text color={theme.text.default}>{date!.title}</Text>
+                        {!isLast && <Divider />}
+                      </Box>
+                    );
+                  })}
               </Box>
             )}
           </TitledBox>

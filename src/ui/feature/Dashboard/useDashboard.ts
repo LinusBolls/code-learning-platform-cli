@@ -8,7 +8,7 @@ import { DashboardProps } from './index.js';
 export default function useDashboard(): DashboardProps {
   const myModuleData = useLearningPlatformMyModuleData();
 
-  delete myModuleData.data?.myModuleData.__typename;
+  delete myModuleData.data?.myModuleData?.__typename;
 
   const myProjects = useLearningPlatformMyProjects();
 
@@ -30,7 +30,8 @@ export default function useDashboard(): DashboardProps {
     importantSemesterDates: {
       isLoading: importantSemesterDates.isLoading,
       isError: importantSemesterDates.isLoadingError,
-      data: importantSemesterDates.data?.currentSemester.importantSemesterDates,
+      data: importantSemesterDates.data?.currentSemester
+        ?.importantSemesterDates,
     },
     breadcrumbsProps: {
       isLoading: queries.some((i) => i.isFetching),

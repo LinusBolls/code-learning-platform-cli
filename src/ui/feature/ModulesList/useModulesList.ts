@@ -111,8 +111,9 @@ export default function useModulesList(isActive = true): ModulesListProps {
       // for example: right now, there are 2 active "Clean Code" modules, one for handbook v1 and one for handbook v2.
       // we only want one of them (doesn't really matter which one), and they have the same moduleIdentifier, so we'll only include one of them in this object.
       .reduce<Record<string, any>>((modulesById, module) => {
-        modulesById[module.moduleIdentifier] = module;
-
+        if (module.moduleIdentifier) {
+          modulesById[module.moduleIdentifier] = module;
+        }
         return modulesById;
       }, {})
   );
