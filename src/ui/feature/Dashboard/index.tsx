@@ -2,9 +2,9 @@ import { Box, Text } from 'ink';
 import React from 'react';
 
 import { useTheme } from '../../../services/useTheme/index.js';
-import Breadcrumbs from '../../component/Breadcrumbs.js';
+import Breadcrumbs, { BreadcrumbsProps } from '../../component/Breadcrumbs.js';
 import Divider from '../../component/Divider.js';
-import LoadingSpinner from '../../component/LoadingSpinner.js';
+import { LoadingText } from '../../component/LoadingSpinner.js';
 import Progress from '../../component/Progress.js';
 import TitledBox from '../../component/TitledBox.js';
 
@@ -45,11 +45,13 @@ export interface DashboardProps {
   importantSemesterDates:
     | { title: string; subtitle: string; date: string }[]
     | null;
+  breadcrumbsProps?: Omit<BreadcrumbsProps, 'steps'>;
 }
 export default function Dashboard({
   ectsData,
   myProjects,
   importantSemesterDates,
+  breadcrumbsProps,
 }: DashboardProps) {
   const { theme } = useTheme();
 
@@ -67,7 +69,7 @@ export default function Dashboard({
 
   return (
     <Box flexDirection="column" flexGrow={1}>
-      <Breadcrumbs steps={['Dashboard']} />
+      <Breadcrumbs steps={['Dashboard']} {...breadcrumbsProps} />
       <Box gap={1} paddingTop={1}>
         <Box flexDirection="column" gap={1} flexGrow={1}>
           <TitledBox title="My Semester" minHeight={4}>
@@ -126,7 +128,7 @@ export default function Dashboard({
               </>
             ) : (
               <Box height={20} alignItems="center" justifyContent="center">
-                <LoadingSpinner />
+                <LoadingText />
               </Box>
             )}
           </TitledBox>
@@ -157,7 +159,7 @@ export default function Dashboard({
               </Box>
             ) : (
               <Box alignItems="center" justifyContent="center" flexGrow={1}>
-                <LoadingSpinner />
+                <LoadingText />
               </Box>
             )}
           </TitledBox>
@@ -191,7 +193,7 @@ export default function Dashboard({
               </Box>
             ) : (
               <Box alignItems="center" justifyContent="center" flexGrow={1}>
-                <LoadingSpinner />
+                <LoadingText />
               </Box>
             )}
           </TitledBox>

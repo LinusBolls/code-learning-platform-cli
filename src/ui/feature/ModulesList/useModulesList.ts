@@ -176,5 +176,9 @@ export default function useModulesList(isActive = true) {
     onSearchQueryChange: store.actions.setSearchQuery,
     isLoading: modulesQuery.isLoading,
     activeModuleId: navigation.moduleId,
+    breadcrumbsProps: {
+      isLoading: modulesQuery.isFetching,
+      isError: modulesQuery.isError,
+    },
   };
 }

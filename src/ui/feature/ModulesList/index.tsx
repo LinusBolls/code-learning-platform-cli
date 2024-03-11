@@ -1,11 +1,10 @@
 import { Box, Text } from 'ink';
 import React from 'react';
 
-import { useLearningPlatformModules } from '../../../services/useLearningPlatform/index.js';
 import { useTheme } from '../../../services/useTheme/index.js';
-import Breadcrumbs from '../../component/Breadcrumbs.js';
+import Breadcrumbs, { BreadcrumbsProps } from '../../component/Breadcrumbs.js';
 import Divider from '../../component/Divider.js';
-import LoadingSpinner from '../../component/LoadingSpinner.js';
+import { LoadingText } from '../../component/LoadingSpinner.js';
 import PaginationIndicator from '../../component/PaginationIndicator.js';
 import SearchBar from '../../component/SearchBar.js';
 
@@ -32,6 +31,7 @@ export interface ModulesListProps {
   isLoading?: boolean;
   onSearchSubmit?: (openResultIfOnlyOne?: boolean) => void;
   onSearchCancel?: () => void;
+  breadcrumbsProps?: Omit<BreadcrumbsProps, 'steps'>;
 }
 export default function ModulesList({
   modulesPerPage,
@@ -45,33 +45,21 @@ export default function ModulesList({
   isLoading = false,
   onSearchSubmit,
   onSearchCancel,
+  breadcrumbsProps,
 }: ModulesListProps) {
   const { theme } = useTheme();
-
-  const modulesQuery = useLearningPlatformModules();
 
   if (isLoading)
     return (
       <Box flexDirection="column" flexGrow={1}>
-        <Breadcrumbs
-          steps={['Modules']}
-          isLoading={modulesQuery.isFetching}
-          isError={modulesQuery.isError}
-        />
-        <Box alignItems="center" justifyContent="center" flexGrow={1}>
-          <Text color={theme.text.secondary}>Loading modules</Text>
-          <LoadingSpinner type="simpleDots" />
-        </Box>
+        <Breadcrumbs steps={['Modules']} {...breadcrumbsProps} />
+        <LoadingText text="Loading modules" />
       </Box>
     );
 
   return (
     <Box flexDirection="column" flexGrow={1}>
-      <Breadcrumbs
-        steps={['Modules']}
-        isLoading={modulesQuery.isFetching}
-        isError={modulesQuery.isError}
-      />
+      <Breadcrumbs steps={['Modules']} {...breadcrumbsProps} />
       <SearchBar
         onInput={(_, key) => {
           if (key.downArrow || key.tab) onSearchSubmit?.(false);
