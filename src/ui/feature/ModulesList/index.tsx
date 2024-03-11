@@ -20,29 +20,29 @@ export interface Module {
   retired: boolean;
 }
 export interface ModulesListProps {
-  modulesPerPage: number;
+  isLoading?: boolean;
+  modulesPerPage?: number;
   activeModuleId?: string | null;
-  modules: Module[];
-  numPages: number;
-  currentPage: number;
+  modules?: Module[];
+  numPages?: number;
+  currentPage?: number;
   isSearchFocused?: boolean;
   searchQuery?: string;
-  onSearchQueryChange: (query: string) => void;
-  isLoading?: boolean;
+  onSearchQueryChange?: (query: string) => void;
   onSearchSubmit?: (openResultIfOnlyOne?: boolean) => void;
   onSearchCancel?: () => void;
   breadcrumbsProps?: Omit<BreadcrumbsProps, 'steps'>;
 }
 export default function ModulesList({
-  modulesPerPage,
+  isLoading = false,
+  modulesPerPage = 5,
   activeModuleId,
-  modules,
-  numPages,
-  currentPage,
+  modules = [],
+  numPages = 1,
+  currentPage = 0,
   isSearchFocused = false,
   searchQuery = '',
-  onSearchQueryChange,
-  isLoading = false,
+  onSearchQueryChange = () => {},
   onSearchSubmit,
   onSearchCancel,
   breadcrumbsProps,
@@ -92,43 +92,54 @@ export default function ModulesList({
               width="100%"
               height={isLast ? 2 : 3}
             >
-              <Box
-                flexDirection="column"
-                paddingLeft={activeModuleId === module.id ? 2 : 0}
-              >
-                <Box>
-                  <Text color={module.departmentColor} wrap="truncate" bold>
-                    {module.shortCode}{' '}
-                  </Text>
-                  {module.retired && (
-                    <Text
-                      bold
-                      backgroundColor={theme.module.retired.main}
-                      color={theme.highlight.active.main}
-                    >
-                      Retired
-                    </Text>
-                  )}
-                  <Text color={theme.text.default} wrap="truncate" bold>
-                    {module.retired && ' '}
-                    {module.title}
-                  </Text>
-                  <Text bold={false} color={theme.text.secondary}>
-                    {' '}
-                    ({module.ects} ECTS,{' '}
-                    {module.graded ? 'graded' : 'not graded'})
-                  </Text>
-                </Box>
-                <Text color={theme.text.secondary} wrap="truncate">
-                  {module.coordinatorName}
-                </Text>
-              </Box>
+              <ModuleItem
+                module={module}
+                isActive={module.id === activeModuleId}
+              />
               {!isLast && <Divider />}
             </Box>
           );
         })}
       </Box>
       <PaginationIndicator numPages={numPages} currentPage={currentPage} />
+    </Box>
+  );
+}
+
+export interface ModuleItemProps {
+  module: Module;
+  isActive?: boolean;
+}
+export function ModuleItem({ module, isActive = false }: ModuleItemProps) {
+  const { theme } = useTheme();
+
+  return (
+    <Box flexDirection="column" paddingLeft={isActive ? 2 : 0}>
+      <Box>
+        <Text color={module.departmentColor} wrap="truncate" bold>
+          {module.shortCode}{' '}
+        </Text>
+        {module.retired && (
+          <Text
+            bold
+            backgroundColor={theme.module.retired.main}
+            color={theme.highlight.active.main}
+          >
+            Retired
+          </Text>
+        )}
+        <Text color={theme.text.default} wrap="truncate" bold>
+          {module.retired && ' '}
+          {module.title}
+        </Text>
+        <Text bold={false} color={theme.text.secondary}>
+          {' '}
+          ({module.ects} ECTS, {module.graded ? 'graded' : 'not graded'})
+        </Text>
+      </Box>
+      <Text color={theme.text.secondary} wrap="truncate">
+        {module.coordinatorName}
+      </Text>
     </Box>
   );
 }

@@ -40,9 +40,9 @@ export interface Project {
 }
 
 export interface DashboardProps {
-  ectsData: EctsData | null;
-  myProjects: Project[] | null;
-  importantSemesterDates:
+  ectsData?: EctsData | null;
+  myProjects?: Project[] | null;
+  importantSemesterDates?:
     | { title: string; subtitle: string; date: string }[]
     | null;
   breadcrumbsProps?: Omit<BreadcrumbsProps, 'steps'>;
