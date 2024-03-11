@@ -9,8 +9,8 @@ import { toModuleViewModel } from '../../util/mapping.js';
 import { ModulesListProps } from './index.js';
 
 const getNumModules = (screenHeight: number) => {
-  // 9 lines are taken up by the breadcrumbs, searchbar, and pagination indicator, plus padding
-  const modulesHeight = screenHeight - 11;
+  // 9 lines are taken up by the breadcrumbs, searchbar, search filters, and pagination indicator, plus padding
+  const modulesHeight = screenHeight - 13;
 
   let totalHeight = 0;
   let numModules = 0;
@@ -32,19 +32,66 @@ const getNumModules = (screenHeight: number) => {
 interface ModulesListStore {
   currentPage: number;
   searchQuery: string;
+
+  filter: {
+    mandatory: boolean;
+    alternativeAssessment: boolean;
+    earlyAssessment: boolean;
+  };
+
   actions: {
     setSearchQuery: (query: string) => void;
     quitSearch: () => void;
     goToPage: (page: number) => void;
+
+    toggleMandatoryFilter: () => void;
+    toggleAlternativeAssessmentFilter: () => void;
+    toggleEarlyAssessmentFilter: () => void;
+    resetFilters: () => void;
   };
 }
 const modulesListStore = create<ModulesListStore>((set) => ({
   searchQuery: '',
   currentPage: 0,
+  filter: {
+    mandatory: false,
+    alternativeAssessment: false,
+    earlyAssessment: false,
+  },
   actions: {
     setSearchQuery: (query) => set({ searchQuery: query }),
     quitSearch: () => set({ searchQuery: '' }),
     goToPage: (page) => set({ currentPage: page }),
+    toggleMandatoryFilter: () => {
+      set((state) => ({
+        filter: { ...state.filter, mandatory: !state.filter.mandatory },
+      }));
+    },
+    toggleAlternativeAssessmentFilter: () => {
+      set((state) => ({
+        filter: {
+          ...state.filter,
+          alternativeAssessment: !state.filter.alternativeAssessment,
+        },
+      }));
+    },
+    toggleEarlyAssessmentFilter: () => {
+      set((state) => ({
+        filter: {
+          ...state.filter,
+          earlyAssessment: !state.filter.earlyAssessment,
+        },
+      }));
+    },
+    resetFilters: () => {
+      set(() => ({
+        filter: {
+          mandatory: false,
+          alternativeAssessment: false,
+          earlyAssessment: false,
+        },
+      }));
+    },
   },
 }));
 
@@ -108,7 +155,7 @@ export default function useModulesList(isActive = true): ModulesListProps {
 
   useInput(
     (input, key) => {
-      if (input === 's') {
+      if (input.toLowerCase() === 's') {
         navigation.focus('modules:search');
         navigation.unselectModule();
       }
@@ -116,6 +163,16 @@ export default function useModulesList(isActive = true): ModulesListProps {
         navigation.unselectModule();
       }
       if (!navigation.canReceiveHotkeys) return;
+
+      if (input.toLowerCase() === 'm') {
+        store.actions.toggleMandatoryFilter();
+      }
+      if (input.toLowerCase() === 'a') {
+        store.actions.toggleAlternativeAssessmentFilter();
+      }
+      if (input.toLowerCase() === 'e') {
+        store.actions.toggleEarlyAssessmentFilter();
+      }
 
       if (key.leftArrow) {
         if (store.currentPage > 0) {
@@ -167,7 +224,7 @@ export default function useModulesList(isActive = true): ModulesListProps {
       navigation.unfocus();
       store.actions.quitSearch();
     },
-
+    filter: store.filter,
     modulesPerPage: modulesPerPage,
     modules: {
       isLoading: modulesQuery.isLoading,

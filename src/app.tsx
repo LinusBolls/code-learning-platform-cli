@@ -42,7 +42,7 @@ const App = () => {
     }
     if (!navigation.canReceiveHotkeys) return;
 
-    if (['q', 'Q'].includes(input)) {
+    if (input.toLowerCase() === 'q') {
       quitApplication();
     }
 

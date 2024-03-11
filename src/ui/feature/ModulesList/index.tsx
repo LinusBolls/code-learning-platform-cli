@@ -3,6 +3,7 @@ import React from 'react';
 
 import { useTheme } from '../../../services/useTheme/index.js';
 import Breadcrumbs, { BreadcrumbsProps } from '../../component/Breadcrumbs.js';
+import Checkbox from '../../component/Checkbox.js';
 import Divider from '../../component/Divider.js';
 import { ErrorText, LoadingText } from '../../component/LoadingSpinner.js';
 import PaginationIndicator from '../../component/PaginationIndicator.js';
@@ -32,6 +33,11 @@ export interface ModulesListProps {
   onSearchSubmit?: (openResultIfOnlyOne?: boolean) => void;
   onSearchCancel?: () => void;
   breadcrumbsProps?: Omit<BreadcrumbsProps, 'steps'>;
+  filter: {
+    mandatory: boolean;
+    alternativeAssessment: boolean;
+    earlyAssessment: boolean;
+  };
 }
 export default function ModulesList({
   modulesPerPage = 5,
@@ -45,6 +51,7 @@ export default function ModulesList({
   onSearchSubmit,
   onSearchCancel,
   breadcrumbsProps,
+  filter,
 }: ModulesListProps) {
   const { theme } = useTheme();
 
@@ -78,6 +85,20 @@ export default function ModulesList({
         value={searchQuery}
         onChange={onSearchQueryChange}
       />
+      <Box gap={6} paddingLeft={2} paddingBottom={1}>
+        <Checkbox
+          value={filter.mandatory}
+          label="M Mandatory/Compulsory Elective"
+        />
+        <Checkbox
+          value={filter.alternativeAssessment}
+          label="A Allows alternative assessment"
+        />
+        <Checkbox
+          value={filter.earlyAssessment}
+          label="E Allows early assessment"
+        />
+      </Box>
       <Box
         flexDirection="column"
         alignItems="center"
