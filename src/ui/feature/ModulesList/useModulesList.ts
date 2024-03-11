@@ -105,7 +105,9 @@ export default function useModulesList(isActive = true): ModulesListProps {
   const modulesToDisplay = Object.values(
     (modulesQuery.data?.modules ?? [])
       .filter(
-        (i) => i.department != null // i.semesterModules.some((j: any) => j.semester.isActive && !j.isDraft)
+        (i) =>
+          i.department != null &&
+          i.semesterModules.some((j: any) => j.semester.isActive && !j.isDraft)
       )
       // we want only list a module once, even if it's available in multiple handbooks.
       // for example: right now, there are 2 active "Clean Code" modules, one for handbook v1 and one for handbook v2.
