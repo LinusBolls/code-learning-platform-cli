@@ -67,12 +67,32 @@ export interface DashboardProps {
         )[]
       | null;
   };
+  followedProjectUpdates: {
+    isLoading: boolean;
+    isError: boolean;
+    data?:
+      | ({
+          title?: string;
+        } | null)[]
+      | null;
+  };
+  mySemesterModules: {
+    isLoading: boolean;
+    isError: boolean;
+    data?:
+      | ({
+          module?: { title?: string } | null;
+        } | null)[]
+      | null;
+  };
   breadcrumbsProps?: Omit<BreadcrumbsProps, 'steps'>;
 }
 export default function Dashboard({
   myModuleData,
   myProjects,
   importantSemesterDates,
+  followedProjectUpdates,
+  mySemesterModules,
   breadcrumbsProps,
 }: DashboardProps) {
   const { theme } = useTheme();
@@ -96,7 +116,31 @@ export default function Dashboard({
         <Box flexDirection="column" gap={1} flexGrow={1}>
           <TitledBox title="My Semester" minHeight={4}>
             <Box flexGrow={1} alignItems="center" justifyContent="center">
-              <Text color={theme.text.secondary}>Coming soon</Text>
+              {mySemesterModules.isLoading && <LoadingText />}
+              {mySemesterModules.isError && <ErrorText />}
+              {mySemesterModules.data?.length === 0 && (
+                <Text color={theme.text.secondary}>No data.</Text>
+              )}
+              {(mySemesterModules.data?.length ?? 0) > 0 && (
+                <Box
+                  flexGrow={1}
+                  flexDirection="column"
+                  paddingX={2}
+                  paddingY={1}
+                >
+                  {mySemesterModules.data?.map((update, idx) => {
+                    const isLast = idx === myProjects.data!.length - 1;
+                    return (
+                      <Box flexDirection="column" key={idx} flexGrow={1}>
+                        <Text color={theme.text.default}>
+                          {update?.module?.title ?? 'Unknown'}
+                        </Text>
+                        {!isLast && <Divider />}
+                      </Box>
+                    );
+                  })}
+                </Box>
+              )}
             </Box>
           </TitledBox>
           <TitledBox
@@ -162,15 +206,18 @@ export default function Dashboard({
           <TitledBox title="Important Semester Dates" minHeight={4}>
             {importantSemesterDates.isLoading && <LoadingText />}
             {importantSemesterDates.isError && <ErrorText />}
-            {importantSemesterDates.data && (
+            {importantSemesterDates.data?.length === 0 && (
+              <Text color={theme.text.secondary}>No data.</Text>
+            )}
+            {(importantSemesterDates.data?.length ?? 0) > 0 && (
               <Box
                 flexGrow={1}
                 flexDirection="column"
                 paddingX={2}
                 paddingY={1}
               >
-                {importantSemesterDates.data
-                  .filter(Boolean)
+                {importantSemesterDates
+                  .data!.filter(Boolean)
                   .map((date, idx) => {
                     const isLast =
                       idx === importantSemesterDates.data!.length - 1;
@@ -191,13 +238,40 @@ export default function Dashboard({
           </TitledBox>
           <TitledBox title="My Project Updates" minHeight={4}>
             <Box flexGrow={1} alignItems="center" justifyContent="center">
-              <Text color={theme.text.secondary}>Coming soon</Text>
+              {followedProjectUpdates.isLoading && <LoadingText />}
+              {followedProjectUpdates.isError && <ErrorText />}
+              {followedProjectUpdates.data?.length === 0 && (
+                <Text color={theme.text.secondary}>No data.</Text>
+              )}
+              {(followedProjectUpdates.data?.length ?? 0) > 0 && (
+                <Box
+                  flexGrow={1}
+                  flexDirection="column"
+                  paddingX={2}
+                  paddingY={1}
+                >
+                  {followedProjectUpdates.data?.map((update, idx) => {
+                    const isLast = idx === myProjects.data!.length - 1;
+                    return (
+                      <Box flexDirection="column" key={idx} flexGrow={1}>
+                        <Text color={theme.text.default}>
+                          {update?.title ?? 'Unknown'}
+                        </Text>
+                        {!isLast && <Divider />}
+                      </Box>
+                    );
+                  })}
+                </Box>
+              )}
             </Box>
           </TitledBox>
           <TitledBox title="My Projects" minHeight={4}>
             {myProjects.isLoading && <LoadingText />}
             {myProjects.isError && <ErrorText />}
-            {myProjects.data && (
+            {myProjects.data?.length === 0 && (
+              <Text color={theme.text.secondary}>No data.</Text>
+            )}
+            {(myProjects.data?.length ?? 0) > 0 && (
               <Box
                 flexGrow={1}
                 flexDirection="column"
