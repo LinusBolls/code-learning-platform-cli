@@ -1,5 +1,7 @@
 import meow from 'meow';
 
+import { logger } from '../useFileSystem/index.js';
+
 export const cli = meow(
   `
 	Usage
@@ -41,6 +43,9 @@ export function quitApplication(errorMessage?: string) {
   );
   if (errorMessage) {
     process.stderr.write(errorMessage);
+    logger.error('quitting application: ' + errorMessage);
+  } else {
+    logger.log('quitting application');
   }
   process.exit(errorMessage ? 1 : 0);
 }

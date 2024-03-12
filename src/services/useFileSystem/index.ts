@@ -12,13 +12,48 @@ function getUserDataPath() {
 
 const appDataPath = join(getUserDataPath(), 'code-learning-platform-cli');
 const cachePath = join(appDataPath, 'cache');
+const logsPath = join(appDataPath, 'logs');
 
 const configFilePath = join(appDataPath, 'auth.json');
+
+class Logger {
+  private logFilePath: string;
+  constructor() {
+    this.logFilePath = join(logsPath, new Date().toISOString() + '.log.txt');
+
+    this.log('initialized');
+  }
+  private baseLog(type: string, message: unknown) {
+    const messageString =
+      typeof message === 'string' ? message : JSON.stringify(message);
+
+    const prefix = new Date().toISOString() + ` ${type}: `;
+
+    fs.appendFileSync(this.logFilePath, prefix + messageString + '\n');
+  }
+  public log(message: unknown) {
+    this.baseLog('LOG', message);
+  }
+  public warn(message: unknown) {
+    this.baseLog('WARNING', message);
+  }
+  public error(message: unknown) {
+    this.baseLog('ERROR', message);
+  }
+  public debug(message: unknown) {
+    this.baseLog('DEBUG', message);
+  }
+  public info(message: unknown) {
+    this.baseLog('INFO', message);
+  }
+}
+export const logger = new Logger();
 
 async function initAppDataDir() {
   if (!fs.existsSync(appDataPath)) {
     fs.mkdirSync(appDataPath, { recursive: true });
     fs.mkdirSync(cachePath, { recursive: true });
+    fs.mkdirSync(logsPath, { recursive: true });
 
     fs.writeFileSync(configFilePath, JSON.stringify({}), {
       flag: 'wx',
