@@ -24,6 +24,10 @@ export interface ModulesListProps {
   onSearchCancel?: () => void;
   breadcrumbsProps?: Omit<BreadcrumbsProps, 'steps'>;
   filter: {
+    myStudies: boolean;
+    mySemester: boolean;
+    passed: boolean;
+    failed: boolean;
     mandatory: boolean;
     alternativeAssessment: boolean;
     earlyAssessment: boolean;
@@ -82,18 +86,12 @@ export default function ModulesList({
         onChange={onSearchQueryChange}
       />
       <Box gap={6} paddingLeft={2} paddingBottom={1}>
-        <Checkbox
-          value={filter.mandatory}
-          label="M Mandatory/Compulsory Elective"
-        />
+        <Checkbox value={filter.mandatory} label="M Mandatory/Elective" />
         <Checkbox
           value={filter.alternativeAssessment}
-          label="A Allows alternative assessment"
+          label="A Alternative assessment"
         />
-        <Checkbox
-          value={filter.earlyAssessment}
-          label="E Allows early assessment"
-        />
+        <Checkbox value={filter.earlyAssessment} label="E Early assessment" />
       </Box>
       <Box
         flexDirection="column"
@@ -160,7 +158,7 @@ export function ModuleCard({ module, isActive = false }: ModuleItemProps) {
             backgroundColor={theme.module.retired.main}
             color={theme.highlight.active.main}
           >
-            Not this semester
+            Unavailable
           </Text>
         )}
         {module.retired && (

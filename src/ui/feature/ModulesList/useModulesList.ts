@@ -5,6 +5,8 @@ import { ExecutionContext } from '../../../services/cli/index.js';
 import useInput from '../../../services/useInput/index.js';
 import { useLearningPlatformCurrentUser } from '../../../services/useLearningPlatform/hooks/useLearningPlatformCurrentUser.js';
 import { useLearningPlatformModules } from '../../../services/useLearningPlatform/hooks/useLearningPlatformModules.js';
+import { useLearningPlatformMySemesterList } from '../../../services/useLearningPlatform/hooks/useLearningPlatformMySemesterList.js';
+import { useLearningPlatformMyStudies } from '../../../services/useLearningPlatform/hooks/useLearningPlatformMyStudies.js';
 import { useNavigation } from '../../../services/useNavigation/index.js';
 import { createListStore } from '../../util/createListStore.js';
 import { getTableColumns } from '../../util/getColumns.js';
@@ -42,6 +44,10 @@ interface ModulesFilterStore {
   searchQuery: string;
 
   filter: {
+    myStudies: boolean;
+    mySemester: boolean;
+    passed: boolean;
+    failed: boolean;
     mandatory: boolean;
     alternativeAssessment: boolean;
     earlyAssessment: boolean;
@@ -60,6 +66,10 @@ interface ModulesFilterStore {
 const modulesFilterStore = create<ModulesFilterStore>((set) => ({
   searchQuery: '',
   filter: {
+    myStudies: false,
+    mySemester: false,
+    passed: false,
+    failed: false,
     mandatory: false,
     alternativeAssessment: false,
     earlyAssessment: false,
@@ -91,6 +101,10 @@ const modulesFilterStore = create<ModulesFilterStore>((set) => ({
     resetFilters: () => {
       set(() => ({
         filter: {
+          myStudies: false,
+          mySemester: false,
+          passed: false,
+          failed: false,
           mandatory: false,
           alternativeAssessment: false,
           earlyAssessment: false,
@@ -109,13 +123,19 @@ export default function useModulesList(isActive = true): ModulesListProps {
 
   const modulesQuery = useLearningPlatformModules();
 
+  const modules = modulesQuery.data?.currentSemesterModules ?? [];
+
   const currentUserQuery = useLearningPlatformCurrentUser();
 
   const mandatoryModuleIds = currentUserQuery.data?.me.mandatoryModules ?? [];
 
-  // currentUserQuery.data?.me.moduleHandbooks?.[0]?.moduleHandbook?.modules[0];
+  const myStudiesQuery = useLearningPlatformMyStudies();
 
-  const modules = modulesQuery.data?.currentSemesterModules ?? [];
+  const myPastModules = myStudiesQuery.data?.myStudies ?? [];
+
+  const mySemesterListQuery = useLearningPlatformMySemesterList(100, 0);
+
+  const myCurrentModules = mySemesterListQuery.data?.mySemesterModules ?? [];
 
   /** if there is an active search query, we want to sort by relevance, else by `simpleShortCode` */
   if (!filtersStore.searchQuery.length)
@@ -158,6 +178,31 @@ export default function useModulesList(isActive = true): ModulesListProps {
         i.module!.semesterModules.some((i) => !i.allowsEarlyAssessment)
       )
         return false;
+
+      const attemptedModule = myPastModules.find(
+        (j) =>
+          j?.moduleIdentifier === i.moduleIdentifier &&
+          i.moduleIdentifier != null
+      );
+
+      if (filtersStore.filter.myStudies && attemptedModule == null)
+        return false;
+
+      if (filtersStore.filter.passed && attemptedModule?.status !== 'ATTEMPTED')
+        return false;
+      if (
+        filtersStore.filter.failed &&
+        attemptedModule?.status !== 'NOT_EXCUSED'
+      )
+        return false;
+
+      const currentModule = myCurrentModules.find(
+        (j) =>
+          j?.moduleIdentifier === i.moduleIdentifier &&
+          i.moduleIdentifier != null
+      );
+
+      if (filtersStore.filter.mySemester && currentModule == null) return false;
 
       return true;
     });
@@ -225,6 +270,13 @@ export default function useModulesList(isActive = true): ModulesListProps {
     { key: 'ects', plus: ' ECTS'.length },
   ]);
 
+  const queries = [
+    modulesQuery,
+    currentUserQuery,
+    myStudiesQuery,
+    mySemesterListQuery,
+  ];
+
   return {
     onSearchSubmit: (openResultIfOnlyOne = true) => {
       navigation.unfocus();
@@ -254,8 +306,8 @@ export default function useModulesList(isActive = true): ModulesListProps {
     onSearchQueryChange: filtersStore.actions.setSearchQuery,
     activeModuleId: listStore.selectedItemId,
     breadcrumbsProps: {
-      isLoading: modulesQuery.isFetching,
-      isError: modulesQuery.isError,
+      isLoading: queries.some((i) => i.isFetching),
+      isError: queries.some((i) => i.isError),
     },
     displayMode: listStore.displayMode,
     withDivider: listStore.withDivider,
