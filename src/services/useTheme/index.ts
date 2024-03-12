@@ -64,7 +64,7 @@ export const theme = {
     core: { main: '#1890ff' },
     synthesis: { main: '#ffa940' },
     retired: {
-      main: '#1F1F1F',
+      main: '#ffe58f',
     },
   },
 };
