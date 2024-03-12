@@ -29,6 +29,7 @@ const App = () => {
       pages.users,
     ],
     [
+      pages.settings,
       {
         title: 'Exit',
         hotkeys: ['Q', 'q'],

@@ -7,7 +7,7 @@ import { toEventViewModel } from '../../util/mapping.js';
 import { toQueryDto } from '../../util/queryDTO.js';
 import { EventsListProps } from './index.js';
 
-const useEventsListStore =
+export const useEventsListStore =
   createListStore<ReturnType<typeof toEventViewModel>>();
 
 export default function useEventsList(): EventsListProps {

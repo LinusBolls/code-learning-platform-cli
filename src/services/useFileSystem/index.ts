@@ -15,6 +15,7 @@ const cachePath = join(appDataPath, 'cache');
 const logsPath = join(appDataPath, 'logs');
 
 const configFilePath = join(appDataPath, 'auth.json');
+const settingsFilePath = join(appDataPath, 'settings.json');
 
 class Logger {
   private logFilePath: string;
@@ -58,6 +59,13 @@ async function initAppDataDir() {
     fs.writeFileSync(configFilePath, JSON.stringify({}), {
       flag: 'wx',
     });
+    fs.writeFileSync(
+      settingsFilePath,
+      JSON.stringify({ displayMode: 'table' }),
+      {
+        flag: 'wx',
+      }
+    );
   }
 }
 
@@ -82,6 +90,19 @@ export function readJsonCacheSync<T>(fileName: string): T | undefined {
 }
 export function writeJsonCacheSync(fileName: string, data: unknown) {
   fs.writeFileSync(join(cachePath, fileName), JSON.stringify(data), {
+    flag: 'w',
+  });
+}
+
+export function readSettingsSync(): { displayMode: 'table' | 'cards' } {
+  try {
+    return JSON.parse(fs.readFileSync(settingsFilePath, 'utf8'));
+  } catch (err) {
+    return { displayMode: 'table' };
+  }
+}
+export function writeSettingsSync(data: { displayMode: 'table' | 'cards' }) {
+  fs.writeFileSync(settingsFilePath, JSON.stringify(data), {
     flag: 'w',
   });
 }

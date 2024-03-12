@@ -13,7 +13,7 @@ import { getTableColumns } from '../../util/getColumns.js';
 import { toModuleViewModel } from '../../util/mapping.js';
 import { ModulesListProps } from './index.js';
 
-const useModulesListStore =
+export const useModulesListStore =
   createListStore<ReturnType<ReturnType<typeof toModuleViewModel>>>();
 
 const getModulesPerPage = (

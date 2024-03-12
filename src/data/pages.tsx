@@ -11,6 +11,8 @@ import ModuleInfo from '../ui/feature/ModuleInfo/index.js';
 import useModuleInfo from '../ui/feature/ModuleInfo/useModuleInfo.js';
 import ModulesList from '../ui/feature/ModulesList/index.js';
 import useModulesList from '../ui/feature/ModulesList/useModulesList.js';
+import Settings from '../ui/feature/Settings/index.js';
+import useSettings from '../ui/feature/Settings/useSettings.js';
 
 function Placeholder({ title }: { title: string }) {
   const { theme } = useTheme();
@@ -70,5 +72,11 @@ export const pages = {
     path: 'users',
     title: 'Users',
     hotkeys: ['7'],
+  },
+  settings: {
+    component: () => <Settings {...useSettings()} />,
+    path: 'settings',
+    title: 'Settings',
+    hotkeys: ['8'],
   },
 };

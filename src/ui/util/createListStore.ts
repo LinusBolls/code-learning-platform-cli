@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import { readSettingsSync } from '../../services/useFileSystem/index.js';
+
 // TODO: calculate item height here
 // TODO: calculate columns here
 
@@ -39,6 +41,7 @@ export interface ListStore<Item extends { id: string }> {
     setItems: (items: Item[]) => void;
     setItemsPerPage: (itemsPerPage: number) => void;
     unselectItems: () => void;
+    setDisplayMode: (displayMode: 'table' | 'cards') => void;
   };
   getItemsOnPage: () => Item[];
   getNumPages: () => number;
@@ -53,7 +56,7 @@ export function createListStore<Item extends { id: string }>() {
     selectedItemId: null,
     itemsPerPage: 0,
     withDivider: true,
-    displayMode: 'cards',
+    displayMode: readSettingsSync().displayMode,
     currentPage: 0,
     actions: {
       goToNextPage: () => {
@@ -150,6 +153,7 @@ export function createListStore<Item extends { id: string }>() {
       unselectItems: () => {
         set({ selectedItemId: null });
       },
+      setDisplayMode: (displayMode: 'table' | 'cards') => set({ displayMode }),
     },
     getItemsOnPage: () => {
       return get().items.slice(
