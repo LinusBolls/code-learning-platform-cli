@@ -7,6 +7,7 @@ import Divider from '../../component/Divider.js';
 import { ErrorText, LoadingText } from '../../component/LoadingSpinner.js';
 import Progress from '../../component/Progress.js';
 import TitledBox from '../../component/TitledBox.js';
+import { QueryDTO } from '../../util/queryDTO.js';
 
 export interface EctsDataPoint {
   collectedECTS: number;
@@ -46,67 +47,39 @@ export interface Project {
 }
 
 export interface DashboardProps {
-  myModuleData: {
-    isLoading: boolean;
-    isError: boolean;
-    data?: EctsData | null;
-  };
-  myProjects: {
-    isLoading: boolean;
-    isError: boolean;
-    data?: Project[] | null;
-  };
-  importantSemesterDates: {
-    isLoading: boolean;
-    isError: boolean;
-    data?:
-      | (
-          | { title?: string | null; subtitle?: string | null; date?: string }
-          | null
-          | undefined
-        )[]
-      | null;
-  };
-  followedProjectUpdates: {
-    isLoading: boolean;
-    isError: boolean;
-    data?:
-      | ({
-          title?: string;
-        } | null)[]
-      | null;
-  };
-  mySemesterModules: {
-    isLoading: boolean;
-    isError: boolean;
-    data?:
-      | ({
-          module?: { title?: string } | null;
-        } | null)[]
-      | null;
-  };
-  myUpcomingEvents: {
-    isLoading: boolean;
-    isError: boolean;
-    data?:
-      | ({
-          title: string;
-          host?: { name: string } | null;
-          location?: string | null;
-        } | null)[]
-      | null;
-  };
-  myUpcomingAssessments: {
-    isLoading: boolean;
-    isError: boolean;
-    data?:
-      | {
-          module?: {
-            title: string;
-          } | null;
-        }[]
-      | null;
-  };
+  myModuleData: QueryDTO<EctsData>;
+  myProjects: QueryDTO<Project[]>;
+  importantSemesterDates: QueryDTO<
+    (
+      | { title?: string | null; subtitle?: string | null; date?: string }
+      | null
+      | undefined
+    )[]
+  >;
+  followedProjectUpdates: QueryDTO<
+    ({
+      title?: string;
+    } | null)[]
+  >;
+  mySemesterModules: QueryDTO<
+    ({
+      module?: { title?: string } | null;
+    } | null)[]
+  >;
+  myUpcomingEvents: QueryDTO<
+    ({
+      title: string;
+      host?: { name: string } | null;
+      location?: string | null;
+    } | null)[]
+  >;
+  myUpcomingAssessments: QueryDTO<
+    {
+      module?: {
+        title: string;
+      } | null;
+    }[]
+  >;
   breadcrumbsProps?: Omit<BreadcrumbsProps, 'steps'>;
 }
 export default function Dashboard({

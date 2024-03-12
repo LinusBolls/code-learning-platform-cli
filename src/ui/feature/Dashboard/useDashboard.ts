@@ -5,6 +5,7 @@ import { useLearningPlatformMyProjects } from '../../../services/useLearningPlat
 import { useLearningPlatformMyUpcomingAssessments } from '../../../services/useLearningPlatform/hooks/useLearningPlatformMyUpcomingAssessments.js';
 import { useLearningPlatformMyUpcomingEvents } from '../../../services/useLearningPlatform/hooks/useLearningPlatformMyUpcomingEvents.js';
 import { useLearningPlatformSemesterModuleCard } from '../../../services/useLearningPlatform/hooks/useLearningPlatformSemesterModuleCard.js';
+import { toQueryDto } from '../../util/queryDTO.js';
 import { DashboardProps } from './index.js';
 
 export default function useDashboard(): DashboardProps {
@@ -35,42 +36,29 @@ export default function useDashboard(): DashboardProps {
   ];
 
   return {
-    myModuleData: {
-      isLoading: myModuleData.isLoading,
-      isError: myModuleData.isLoadingError,
-      data: myModuleData.data?.myModuleData,
-    },
-    myProjects: {
-      isLoading: myProjects.isLoading,
-      isError: myProjects.isLoadingError,
-      data: myProjects.data?.myProjects,
-    },
-    importantSemesterDates: {
-      isLoading: importantSemesterDates.isLoading,
-      isError: importantSemesterDates.isLoadingError,
-      data: importantSemesterDates.data?.currentSemester
-        ?.importantSemesterDates,
-    },
-    followedProjectUpdates: {
-      isLoading: followedProjectUpdates.isLoading,
-      isError: followedProjectUpdates.isLoadingError,
-      data: followedProjectUpdates.data?.followedProjectUpdates,
-    },
-    mySemesterModules: {
-      isLoading: semesterModuleCard.isLoading,
-      isError: semesterModuleCard.isLoadingError,
-      data: semesterModuleCard.data?.mySemesterModules,
-    },
-    myUpcomingEvents: {
-      isLoading: myUpcomingEvents.isLoading,
-      isError: myUpcomingEvents.isLoadingError,
-      data: myUpcomingEvents.data?.myUpcomingEvents,
-    },
-    myUpcomingAssessments: {
-      isLoading: myUpcomingAssessments.isLoading,
-      isError: myUpcomingAssessments.isLoadingError,
-      data: myUpcomingAssessments.data?.myUpcomingAssessments,
-    },
+    myModuleData: toQueryDto(myModuleData, myModuleData.data?.myModuleData),
+    myProjects: toQueryDto(myProjects, myProjects.data?.myProjects),
+    importantSemesterDates: toQueryDto(
+      importantSemesterDates,
+      importantSemesterDates.data?.currentSemester?.importantSemesterDates
+    ),
+    followedProjectUpdates: toQueryDto(
+      followedProjectUpdates,
+      followedProjectUpdates.data?.followedProjectUpdates
+    ),
+    mySemesterModules: toQueryDto(
+      semesterModuleCard,
+      semesterModuleCard.data?.mySemesterModules
+    ),
+    myUpcomingEvents: toQueryDto(
+      myUpcomingEvents,
+      myUpcomingEvents.data?.myUpcomingEvents
+    ),
+    myUpcomingAssessments: toQueryDto(
+      myUpcomingAssessments,
+      myUpcomingAssessments.data?.myUpcomingAssessments
+    ),
+
     breadcrumbsProps: {
       isLoading: queries.some((i) => i.isFetching),
       isError: queries.some((i) => i.isError),
