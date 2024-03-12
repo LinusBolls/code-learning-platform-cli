@@ -3,6 +3,7 @@ import { create, useStore } from 'zustand';
 
 import { ExecutionContext } from '../../../services/cli/index.js';
 import useInput from '../../../services/useInput/index.js';
+import { useLearningPlatformCurrentUser } from '../../../services/useLearningPlatform/hooks/useLearningPlatformCurrentUser.js';
 import { useLearningPlatformModules } from '../../../services/useLearningPlatform/hooks/useLearningPlatformModules.js';
 import { useNavigation } from '../../../services/useNavigation/index.js';
 import { toModuleViewModel } from '../../util/mapping.js';
@@ -100,61 +101,73 @@ export default function useModulesList(isActive = true): ModulesListProps {
 
   const modulesQuery = useLearningPlatformModules();
 
-  const navigation = useNavigation();
+  const currentUserQuery = useLearningPlatformCurrentUser();
 
-  const modulesToDisplay = Object.values(
-    (modulesQuery.data?.modules ?? [])
-      .filter(
-        (i) =>
-          i.department != null &&
-          i.semesterModules.some((j: any) => j.semester.isActive && !j.isDraft)
-      )
-      // we want only list a module once, even if it's available in multiple handbooks.
-      // for example: right now, there are 2 active "Clean Code" modules, one for handbook v1 and one for handbook v2.
-      // we only want one of them (doesn't really matter which one), and they have the same moduleIdentifier, so we'll only include one of them in this object.
-      .reduce<Record<string, any>>((modulesById, module) => {
-        if (module.moduleIdentifier) {
-          modulesById[module.moduleIdentifier] = module;
-        }
-        return modulesById;
-      }, {})
-  );
-  if (!store.searchQuery.length)
-    modulesToDisplay.sort((a, b) =>
-      a.simpleShortCode.localeCompare(b.simpleShortCode)
+  const mandatoryModuleIds = currentUserQuery.data?.me.mandatoryModules ?? [];
+
+  // currentUserQuery.data?.me.moduleHandbooks?.[0]?.moduleHandbook?.modules[0];
+
+  const modules = modulesQuery.data?.currentSemesterModules ?? [];
+
+  /** if there is an active search query, we want to sort by relevance, else by `simpleShortCode` */
+  if (!filtersStore.searchQuery.length)
+    modules.sort((a, b) =>
+      a.module!.simpleShortCode.localeCompare(b.module!.simpleShortCode)
     );
 
-  const searcher = new FuzzySearch(
-    modulesToDisplay,
+  const search = new FuzzySearch(
+    modules,
     [
-      'title',
-      'coordinator.name',
-      'department.name',
-      'shortCode',
-      'moduleIdentifier',
+      'module.title',
+      'module.coordinator.name',
+      'module.department.name',
+      'module.shortCode',
     ],
     {
       sort: true,
     }
   );
-  const searchResults = searcher.search(store.searchQuery.trim());
+  const modulesInList = search
+    .search(filtersStore.searchQuery.trim())
+    .filter((i) => {
+      if (
+        filtersStore.filter.mandatory &&
+        !(
+          mandatoryModuleIds.includes(i.module!.id + '|MANDATORY') ||
+          mandatoryModuleIds.includes(i.module!.id + '|COMPULSORY_ELECTIVE')
+        )
+      )
+        return false;
 
-  const modulesPerPage = getNumModules(ExecutionContext.terminal.height);
+      if (
+        filtersStore.filter.alternativeAssessment &&
+        i.module!.semesterModules.some((i) => i.disabledAlternativeAssessment)
+      )
+        return false;
 
-  const numPages = Math.ceil(searchResults.length / modulesPerPage);
+      if (
+        filtersStore.filter.earlyAssessment &&
+        i.module!.semesterModules.some((i) => !i.allowsEarlyAssessment)
+      )
+        return false;
 
-  if (store.currentPage > numPages - 1) {
-    if (numPages > 0) {
-      store.actions.goToPage(numPages - 1);
-    } else if (store.currentPage > 0) {
-      store.actions.goToPage(0);
-    }
-  }
-  const modulesInList = searchResults.slice(
-    store.currentPage * modulesPerPage,
-    store.currentPage * modulesPerPage + modulesPerPage
+      return true;
+    });
+
+  const modulesPerPage = getModulesPerPage(
+    listStore.withDivider,
+    listStore.displayMode,
+    ExecutionContext.terminal.height
   );
-  const mappedModules = modulesInList.map(toModuleViewModel);
+
+  const mappedModules = modulesInList.map(
+    toModuleViewModel(mandatoryModuleIds)
+  );
+  listStore.actions.setItems(mappedModules);
+
+  listStore.actions.setItemsPerPage(modulesPerPage);
+
+  const modulesOnScreen = listStore.getItemsOnPage();
 
   useInput(
     (input, key) => {

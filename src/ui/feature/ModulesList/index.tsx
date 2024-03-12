@@ -8,18 +8,8 @@ import Divider from '../../component/Divider.js';
 import { ErrorText, LoadingText } from '../../component/LoadingSpinner.js';
 import PaginationIndicator from '../../component/PaginationIndicator.js';
 import SearchBar from '../../component/SearchBar.js';
+import { Module } from '../../util/mapping.js';
 
-export interface Module {
-  id: string;
-  title: string;
-  coordinatorName: string;
-  shortCode: string;
-  departmentShortCode: string;
-  departmentColor: string;
-  ects: number;
-  graded: boolean;
-  retired: boolean;
-}
 export interface ModulesListProps {
   isLoading?: boolean;
   modulesPerPage?: number;

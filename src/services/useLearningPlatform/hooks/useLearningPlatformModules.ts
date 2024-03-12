@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { QueryRes } from 'code-university';
 
-import { useFileSystem } from '../../useFileSystem/index.js';
+import { logger, useFileSystem } from '../../useFileSystem/index.js';
 import { useLearningPlatform } from '../index.js';
 
 export const useLearningPlatformModules = () => {
@@ -9,34 +9,46 @@ export const useLearningPlatformModules = () => {
 
   const { readJsonCacheSync } = useFileSystem();
 
-  return useQuery<QueryRes<'modules'>>({
+  return useQuery<QueryRes<'currentSemesterModules'>>({
     queryFn: async () => {
-      const { modulesCount } = await learningPlatform!.raw.query(`
+      const { currentSemesterModulesCount } = await learningPlatform!.raw
+        .query<'currentSemesterModulesCount'>(`
         query {
-          modulesCount
+          currentSemesterModulesCount
         }`);
       const modulesPerQuery = 100;
 
-      const numQueries = Math.ceil(modulesCount / modulesPerQuery);
+      const numQueries = Math.ceil(
+        currentSemesterModulesCount / modulesPerQuery
+      );
 
       let results = [];
+
+      logger.log(
+        `fetching ${currentSemesterModulesCount} modules over ${numQueries} queries`
+      );
 
       for (const idx of Array.from({ length: numQueries }).map(
         (_, idx) => idx
       )) {
         results.push(
-          await learningPlatform!.raw.query(query, {
+          await learningPlatform!.raw.query<'currentSemesterModules'>(query, {
             pagination: {
               limit: modulesPerQuery,
               offset: idx * modulesPerQuery,
             },
+            filter: {},
           })
         );
       }
-      const modules = results.flatMap((d) => d.modules);
+      const currentSemesterModules = results.flatMap(
+        (d) => d.currentSemesterModules
+      );
+
+      logger.log(`completed modules fetch`);
 
       return {
-        modules,
+        currentSemesterModules: currentSemesterModules as any,
       };
     },
     queryKey: ['learningPlatform', 'modules'],
@@ -45,15 +57,71 @@ export const useLearningPlatformModules = () => {
   });
 };
 
-const query = `query modules($pagination: OffsetPaginationInput!) {
-  modules(pagination: $pagination) {
+const query = `query semesterModuleAllModules($pagination: OffsetPaginationInput, $filter: SemesterModuleFilter) {
+  currentSemesterModules(pagination: $pagination, filter: $filter) {
+    __typename
+    ...SemesterModuleListCard
+  }
+  coordinatorUsers {
+    ...UserListItem
+    __typename
+  }
+  currentSemesterModulesCount(filter: $filter)
+}
+
+fragment SemesterModuleListCard on ViewerSemesterModule {
+  __typename
+  ...TakenSemesterModule
+  ...CoordinatedSemesterModule
+  ...UnassociatedSemesterModule
+}
+
+fragment TakenSemesterModule on ViewerTakenSemesterModule {
+  ...SemesterModuleFrame
+  status
+  highestGrade
+  latestAssessment {
+    id
+    publishedAt
+    learningUnit {
+      id
+      title
+      __typename
+    }
+    __typename
+  }
+  currentAssessment {
+    id
+    __typename
+  }
+  primaryAssessor {
+    id
+    name
+    __typename
+  }
+  __typename
+}
+
+fragment SemesterModuleFrame on ViewerSemesterModule {
+  id
+  isDraft
+  hasDuplicate
+  allowsRegistration
+  moduleIdentifier
+  module {
+    id
     title
     shortCode
-    moduleIdentifier
     simpleShortCode
-    department {
-      abbreviation
+    retired
+    coordinator {
+      id
+      name
+      __typename
     }
+    __typename
+
+    # we added these fields
     content
     qualificationGoals
     ects
@@ -61,34 +129,64 @@ const query = `query modules($pagination: OffsetPaginationInput!) {
     selfStudyTime
     weeklyHours
     graded
-    retired
-    coordinator {
-      name
-    }
+    workload
     prerequisites {
       id
     }
     prerequisiteFor {
       id
     }
-    replacements {
-        id
-    }
-    replacementFor {
-        id
+    department {
+      # for use in the search
+      name
+      # to identify the department
+      abbreviation
     }
     semesterModules {
-      allowsRegistration
-      semester {
-        isActive
-      }
-      isDraft
-      hasDuplicate
-      status
+      allowsEarlyAssessment
+      disabledAlternativeAssessment
     }
-    workload
-    id
-    createdAt
-    updatedAt
+    # /we added these fields
   }
+  semester {
+    id
+    name
+    isActive
+    __typename
+  }
+  __typename
+}
+
+fragment CoordinatedSemesterModule on ViewerCoordinatedSemesterModule {
+  ...SemesterModuleFrame
+  openProposalsCount
+  openAssessmentsCount
+  __typename
+}
+
+fragment UnassociatedSemesterModule on ViewerSemesterModule {
+  ...SemesterModuleFrame
+  __typename
+}
+
+fragment UserListItem on User {
+  id
+  firstName
+  lastName
+  name
+  email
+  inactive
+  role
+  slackLink
+  skills {
+    id
+    isHighlighted
+    skill {
+      name
+      __typename
+    }
+    __typename
+  }
+  avatarUrl
+  __typename
 }`;

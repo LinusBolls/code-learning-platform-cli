@@ -3,13 +3,10 @@ import React from 'react';
 
 import { useTheme } from '../../../services/useTheme/index.js';
 import Breadcrumbs from '../../component/Breadcrumbs.js';
+import { Module } from '../../util/mapping.js';
 
 export interface ModuleInfoProps {
-  module: {
-    shortCode: string;
-    content: string;
-    qualificationGoals: string;
-  } | null;
+  module: Module | null;
 }
 export default function ModuleInfo({ module }: ModuleInfoProps) {
   const { theme } = useTheme();
