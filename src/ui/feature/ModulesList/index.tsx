@@ -28,6 +28,9 @@ export interface ModulesListProps {
     alternativeAssessment: boolean;
     earlyAssessment: boolean;
   };
+  displayMode: 'table' | 'cards';
+  withDivider?: boolean;
+  columns: { width: number }[];
 }
 export default function ModulesList({
   modulesPerPage = 5,
@@ -42,6 +45,9 @@ export default function ModulesList({
   onSearchCancel,
   breadcrumbsProps,
   filter,
+  displayMode,
+  withDivider = true,
+  columns,
 }: ModulesListProps) {
   const { theme } = useTheme();
 
@@ -71,7 +77,7 @@ export default function ModulesList({
         onSubmit={() => onSearchSubmit?.()}
         onCancel={onSearchCancel}
         isActive={isSearchFocused}
-        placeholder="S Search by name, department, or coordinator"
+        placeholder="S Search by name, study program, or professor"
         value={searchQuery}
         onChange={onSearchQueryChange}
       />
@@ -95,7 +101,11 @@ export default function ModulesList({
         flexGrow={1}
         padding={1}
         // height of the modules + height of the dividers - vertical padding
-        height={modulesPerPage * 2 + (modulesPerPage - 1) + 2}
+        height={
+          modulesPerPage * (displayMode === 'cards' ? 2 : 1) +
+          (withDivider ? modulesPerPage - 1 : 0) +
+          2
+        }
       >
         {modules.data!.length < 1 && (
           <Text color={theme.text.secondary}>No modules found.</Text>
@@ -103,18 +113,28 @@ export default function ModulesList({
         {modules.data!.map((module, idx) => {
           const isLast = idx === modules.data!.length - 1;
 
+          const hasDivider = withDivider && !isLast;
+
           return (
             <Box
               key={module.id}
               flexDirection="column"
               width="100%"
-              height={isLast ? 2 : 3}
+              height={(displayMode === 'cards' ? 2 : 1) + (hasDivider ? 1 : 0)}
             >
-              <ModuleItem
-                module={module}
-                isActive={module.id === activeModuleId}
-              />
-              {!isLast && <Divider />}
+              {displayMode === 'cards' ? (
+                <ModuleCard
+                  module={module}
+                  isActive={module.id === activeModuleId}
+                />
+              ) : (
+                <ModuleTableRow
+                  columns={columns}
+                  module={module}
+                  isActive={module.id === activeModuleId}
+                />
+              )}
+              {hasDivider && <Divider />}
             </Box>
           );
         })}
@@ -128,15 +148,21 @@ export interface ModuleItemProps {
   module: Module;
   isActive?: boolean;
 }
-export function ModuleItem({ module, isActive = false }: ModuleItemProps) {
+export function ModuleCard({ module, isActive = false }: ModuleItemProps) {
   const { theme } = useTheme();
 
   return (
     <Box flexDirection="column" paddingLeft={isActive ? 2 : 0}>
-      <Box>
-        <Text color={module.departmentColor} wrap="truncate" bold>
-          {module.shortCode}{' '}
-        </Text>
+      <Box gap={1}>
+        {module.notOfferedThisSemester && (
+          <Text
+            bold
+            backgroundColor={theme.module.retired.main}
+            color={theme.highlight.active.main}
+          >
+            Not this semester
+          </Text>
+        )}
         {module.retired && (
           <Text
             bold
@@ -146,18 +172,79 @@ export function ModuleItem({ module, isActive = false }: ModuleItemProps) {
             Retired
           </Text>
         )}
+        <Text color={module.departmentColor} wrap="truncate" bold>
+          {module.shortCode}
+        </Text>
         <Text color={theme.text.default} wrap="truncate" bold>
-          {module.retired && ' '}
           {module.title}
         </Text>
-        <Text bold={false} color={theme.text.secondary}>
-          {' '}
-          ({module.ects} ECTS, {module.graded ? 'graded' : 'not graded'})
+        <Text color={theme.text.secondary}>
+          ({module.ects} ECTS
+          {module.isMandatory ? ', mandatory' : ''}
+          {module.isCompulsoryElective ? ', compulsory elective' : ''})
         </Text>
       </Box>
       <Text color={theme.text.secondary} wrap="truncate">
         {module.coordinatorName}
       </Text>
+    </Box>
+  );
+}
+
+export function ModuleTableRow({
+  module,
+  isActive = false,
+  columns,
+}: ModuleItemProps & { columns: { width: number }[] }) {
+  const { theme } = useTheme();
+
+  const bgColor = isActive ? theme.highlight.active.background : 'undefined';
+
+  const gap = 2;
+
+  return (
+    <Box>
+      <Box width={columns[0]!.width + gap}>
+        <Text
+          color={
+            isActive ? theme.highlight.active.main : module.departmentColor
+          }
+          wrap="truncate"
+          bold
+          backgroundColor={bgColor}
+        >
+          {module.shortCode.padEnd(columns[0]!.width + gap, ' ')}
+        </Text>
+      </Box>
+      <Box width={columns[1]!.width + gap}>
+        <Text
+          bold={isActive}
+          color={isActive ? theme.highlight.active.main : theme.text.default}
+          backgroundColor={bgColor}
+        >
+          {module.title.padEnd(columns[1]!.width + gap, ' ')}
+        </Text>
+      </Box>
+      <Box width={columns[2]!.width + gap}>
+        <Text
+          bold={isActive}
+          color={isActive ? theme.highlight.active.main : theme.text.secondary}
+          wrap="truncate"
+          backgroundColor={bgColor}
+        >
+          {module.coordinatorName.padEnd(columns[2]!.width + gap, ' ')}
+        </Text>
+      </Box>
+      <Box width={columns[3]!.width}>
+        <Text
+          bold={isActive}
+          color={isActive ? theme.highlight.active.main : theme.text.secondary}
+          wrap="truncate"
+          backgroundColor={bgColor}
+        >
+          {(module.ects + ' ECTS').padEnd(columns[3]!.width, ' ')}
+        </Text>
+      </Box>
     </Box>
   );
 }

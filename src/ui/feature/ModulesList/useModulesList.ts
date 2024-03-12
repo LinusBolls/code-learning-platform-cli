@@ -6,10 +6,19 @@ import useInput from '../../../services/useInput/index.js';
 import { useLearningPlatformCurrentUser } from '../../../services/useLearningPlatform/hooks/useLearningPlatformCurrentUser.js';
 import { useLearningPlatformModules } from '../../../services/useLearningPlatform/hooks/useLearningPlatformModules.js';
 import { useNavigation } from '../../../services/useNavigation/index.js';
+import { createListStore } from '../../util/createListStore.js';
+import { getTableColumns } from '../../util/getColumns.js';
 import { toModuleViewModel } from '../../util/mapping.js';
 import { ModulesListProps } from './index.js';
 
-const getNumModules = (screenHeight: number) => {
+const useModulesListStore =
+  createListStore<ReturnType<ReturnType<typeof toModuleViewModel>>>();
+
+const getModulesPerPage = (
+  withDivider: boolean,
+  displayMode: 'cards' | 'table',
+  screenHeight: number
+) => {
   // 9 lines are taken up by the breadcrumbs, searchbar, search filters, and pagination indicator, plus padding
   const modulesHeight = screenHeight - 13;
 
@@ -18,10 +27,9 @@ const getNumModules = (screenHeight: number) => {
 
   while (totalHeight < modulesHeight) {
     numModules += 1;
-    // a module row is 2 lines tall
-    totalHeight += 2;
+    totalHeight += displayMode === 'cards' ? 2 : 1;
 
-    const hasDivider = totalHeight + 2 < modulesHeight;
+    const hasDivider = withDivider && totalHeight + 2 < modulesHeight;
 
     if (hasDivider) {
       totalHeight += 1;
@@ -30,8 +38,7 @@ const getNumModules = (screenHeight: number) => {
   return numModules;
 };
 
-interface ModulesListStore {
-  currentPage: number;
+interface ModulesFilterStore {
   searchQuery: string;
 
   filter: {
@@ -43,7 +50,6 @@ interface ModulesListStore {
   actions: {
     setSearchQuery: (query: string) => void;
     quitSearch: () => void;
-    goToPage: (page: number) => void;
 
     toggleMandatoryFilter: () => void;
     toggleAlternativeAssessmentFilter: () => void;
@@ -51,9 +57,8 @@ interface ModulesListStore {
     resetFilters: () => void;
   };
 }
-const modulesListStore = create<ModulesListStore>((set) => ({
+const modulesFilterStore = create<ModulesFilterStore>((set) => ({
   searchQuery: '',
-  currentPage: 0,
   filter: {
     mandatory: false,
     alternativeAssessment: false,
@@ -62,7 +67,6 @@ const modulesListStore = create<ModulesListStore>((set) => ({
   actions: {
     setSearchQuery: (query) => set({ searchQuery: query }),
     quitSearch: () => set({ searchQuery: '' }),
-    goToPage: (page) => set({ currentPage: page }),
     toggleMandatoryFilter: () => {
       set((state) => ({
         filter: { ...state.filter, mandatory: !state.filter.mandatory },
@@ -97,6 +101,10 @@ const modulesListStore = create<ModulesListStore>((set) => ({
 }));
 
 export default function useModulesList(isActive = true): ModulesListProps {
+  const filtersStore = useStore(modulesFilterStore);
+
+  const listStore = useModulesListStore();
+
   const navigation = useNavigation();
 
   const modulesQuery = useLearningPlatformModules();
@@ -171,85 +179,86 @@ export default function useModulesList(isActive = true): ModulesListProps {
 
   useInput(
     (input, key) => {
-      if (input.toLowerCase() === 's') {
-        navigation.focus('modules:search');
-        navigation.unselectModule();
-      }
-      if (key.escape) {
-        navigation.unselectModule();
-      }
       if (!navigation.canReceiveHotkeys) return;
 
-      if (input.toLowerCase() === 'm') {
-        store.actions.toggleMandatoryFilter();
+      if (key.escape) {
+        listStore.actions.unselectItems();
       }
-      if (input.toLowerCase() === 'a') {
-        store.actions.toggleAlternativeAssessmentFilter();
-      }
-      if (input.toLowerCase() === 'e') {
-        store.actions.toggleEarlyAssessmentFilter();
-      }
-
       if (key.leftArrow) {
-        if (store.currentPage > 0) {
-          store.actions.goToPage(store.currentPage - 1);
-          navigation.unselectModule();
-        }
+        listStore.actions.goToPrevPage();
       }
       if (key.rightArrow) {
-        if (store.currentPage < numPages - 1) {
-          store.actions.goToPage(store.currentPage + 1);
-          navigation.unselectModule();
-        }
+        listStore.actions.goToNextPage();
       }
       if (key.upArrow) {
-        const selected = modulesInList.findIndex(
-          (i) => i.id === navigation.moduleId
-        );
-        if (selected === -1) {
-          navigation.selectModule(modulesInList[modulesInList.length - 1]?.id);
-        }
-        if (selected > 0) {
-          navigation.selectModule(modulesInList[selected - 1]?.id);
-        }
+        listStore.actions.selectPrevItem();
       }
       if (key.downArrow) {
+        listStore.actions.selectNextItem();
+      }
       if ((key.tab && !key.shift) || key.return || input === ' ') {
         if (listStore.selectedItemId && navigation.path === 'modules') {
           navigation.openPage('module', { moduleId: listStore.selectedItemId });
         }
       }
+      if (input.toLowerCase() === 's') {
+        navigation.focus('modules:search');
+        listStore.actions.unselectItems();
+      }
+      if (input.toLowerCase() === 'm') {
+        filtersStore.actions.toggleMandatoryFilter();
+      }
+      if (input.toLowerCase() === 'a') {
+        filtersStore.actions.toggleAlternativeAssessmentFilter();
+      }
+      if (input.toLowerCase() === 'e') {
+        filtersStore.actions.toggleEarlyAssessmentFilter();
       }
     },
     { isActive }
   );
+  // @ts-expect-error
+  const columns = getTableColumns(mappedModules, [
+    { key: 'shortCode' },
+    { key: 'title', max: 50 },
+    { key: 'coordinatorName', max: 20 },
+    { key: 'ects', plus: ' ECTS'.length },
+  ]);
 
   return {
     onSearchSubmit: (openResultIfOnlyOne = true) => {
       navigation.unfocus();
+      if (openResultIfOnlyOne && modulesOnScreen.length === 1) {
+        const moduleId = modulesOnScreen[0]!.id;
+
+        listStore.actions.selectItem(moduleId);
+
         navigation.openPage('module', { moduleId });
       }
     },
     onSearchCancel: () => {
       navigation.unfocus();
-      store.actions.quitSearch();
+      filtersStore.actions.quitSearch();
     },
-    filter: store.filter,
-    modulesPerPage: modulesPerPage,
+    filter: filtersStore.filter,
+    modulesPerPage,
     modules: {
       isLoading: modulesQuery.isLoading,
       isError: modulesQuery.isLoadingError,
-      data: mappedModules,
+      data: modulesOnScreen,
     },
-    numPages,
-    currentPage: store.currentPage,
+    numPages: listStore.getNumPages(),
+    currentPage: listStore.currentPage,
     isSearchFocused: navigation.focusedId === 'modules:search',
-    searchQuery: store.searchQuery,
-    onSearchQueryChange: store.actions.setSearchQuery,
-    activeModuleId: navigation.moduleId,
+    searchQuery: filtersStore.searchQuery,
+    onSearchQueryChange: filtersStore.actions.setSearchQuery,
+    activeModuleId: listStore.selectedItemId,
     breadcrumbsProps: {
       isLoading: modulesQuery.isFetching,
       isError: modulesQuery.isError,
     },
+    displayMode: listStore.displayMode,
+    withDivider: listStore.withDivider,
+    columns,
   };
 }
