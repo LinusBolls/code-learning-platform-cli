@@ -5,6 +5,8 @@ import { useTheme } from '../services/useTheme/index.js';
 import Breadcrumbs from '../ui/component/Breadcrumbs.js';
 import Dashboard from '../ui/feature/Dashboard/index.js';
 import useDashboard from '../ui/feature/Dashboard/useDashboard.js';
+import EventsList from '../ui/feature/EventsList/index.js';
+import useEventsList from '../ui/feature/EventsList/useEventsList.js';
 import ModuleInfo from '../ui/feature/ModuleInfo/index.js';
 import useModuleInfo from '../ui/feature/ModuleInfo/useModuleInfo.js';
 import ModulesList from '../ui/feature/ModulesList/index.js';
@@ -24,48 +26,48 @@ function Placeholder({ title }: { title: string }) {
 
 export const pages = {
   dashboard: {
-    render: () => <Dashboard {...useDashboard()} />,
-    id: 'dashboard',
+    component: () => <Dashboard {...useDashboard()} />,
+    path: 'dashboard',
     title: 'Dashboard',
     hotkeys: ['1'],
   },
   modules: {
-    render: () => <ModulesList {...useModulesList()} />,
-    id: 'modules',
+    component: () => <ModulesList {...useModulesList()} />,
+    path: 'modules',
     title: 'Modules',
     hotkeys: ['2'],
   },
   module: {
-    render: () => <ModuleInfo {...useModuleInfo()} />,
-    id: 'module',
+    component: () => <ModuleInfo {...useModuleInfo()} />,
+    path: 'module',
   },
   handIns: {
-    render: () => <Placeholder title="Hand-ins" />,
-    id: 'handIns',
+    component: () => <Placeholder title="Hand-ins" />,
+    path: 'handIns',
     title: 'Hand-ins',
     hotkeys: ['3'],
   },
   events: {
-    render: () => <Placeholder title="Events" />,
-    id: 'events',
+    component: () => <EventsList {...useEventsList()} />,
+    path: 'events',
     title: 'Events',
     hotkeys: ['4'],
   },
   academicEvents: {
-    render: () => <Placeholder title="Academic Events" />,
-    id: 'academicEvents',
+    component: () => <Placeholder title="Academic Events" />,
+    path: 'academicEvents',
     title: 'Academic Events',
     hotkeys: ['5'],
   },
   projects: {
-    render: () => <Placeholder title="Projects" />,
-    id: 'projects',
+    component: () => <Placeholder title="Projects" />,
+    path: 'projects',
     title: 'Projects',
     hotkeys: ['6'],
   },
   users: {
-    render: () => <Placeholder title="Users" />,
-    id: 'users',
+    component: () => <Placeholder title="Users" />,
+    path: 'users',
     title: 'Users',
     hotkeys: ['7'],
   },

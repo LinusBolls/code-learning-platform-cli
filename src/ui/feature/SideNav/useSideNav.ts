@@ -4,7 +4,7 @@ import useInput from '../../../services/useInput/index.js';
 import { useNavigation } from '../../../services/useNavigation/index.js';
 
 export interface SideNavItem {
-  id?: string;
+  path?: string;
   title: string;
   hotkeys?: string[];
 }
@@ -24,8 +24,8 @@ export default function useSideNav(
         .flat()
         .find((item) => item.hotkeys?.includes(input));
 
-      if (item?.id) {
-        navigation.openPage(item.id);
+      if (item?.path) {
+        navigation.openPage(item.path);
 
         const idx = itemGroups.flat().findIndex((i) => i.title === item.title);
         setActiveItemIdx(idx);

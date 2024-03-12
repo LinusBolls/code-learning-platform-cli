@@ -1,42 +1,31 @@
 import { create } from 'zustand';
 
-import { cli } from '../cli/index.js';
-
 interface NavigationStore {
-  pageId: string | null;
+  params: Record<string, unknown>;
+  path: string | null;
   focusedId: string | null;
-  moduleId: string | null;
 
   actions: {
-    openPage: (pageId: string) => void;
+    openPage: (path: string, params?: Record<string, unknown>) => void;
 
     focus: (id: string) => void;
     unfocus: () => void;
-
-    selectModule: (moduleId: string) => void;
-    unselectModule: () => void;
   };
 }
-const navigationStore = create<NavigationStore>(() => ({
-  pageId: 'modules',
+const navigationStore = create<NavigationStore>((set) => ({
+  params: {},
+  path: 'modules',
   focusedId: null,
-  moduleId: cli.flags.moduleId?.toLowerCase() ?? null,
 
   actions: {
-    openPage: (pageId: string) => {
-      navigationStore.setState({ pageId });
+    openPage: (path, params = {}) => {
+      set({ path, params });
     },
-    focus: (focusedId: string) => {
-      navigationStore.setState({ focusedId });
+    focus: (focusedId) => {
+      set({ focusedId });
     },
     unfocus: () => {
-      navigationStore.setState({ focusedId: null });
-    },
-    selectModule: (moduleId: string) => {
-      navigationStore.setState({ moduleId });
-    },
-    unselectModule: () => {
-      navigationStore.setState({ moduleId: null });
+      set({ focusedId: null });
     },
   },
 }));
@@ -45,13 +34,11 @@ export const useNavigation = () => {
   const store = navigationStore();
 
   return {
-    pageId: store.pageId,
+    path: store.path,
+    params: store.params,
     canReceiveHotkeys: store.focusedId == null,
     focusedId: store.focusedId,
-    moduleId: store.moduleId,
 
-    selectModule: store.actions.selectModule,
-    unselectModule: store.actions.unselectModule,
     focus: store.actions.focus,
     unfocus: store.actions.unfocus,
     openPage: store.actions.openPage,

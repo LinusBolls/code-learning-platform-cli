@@ -45,17 +45,6 @@ const App = () => {
     if (input.toLowerCase() === 'q') {
       quitApplication();
     }
-
-    if ((key.tab && !key.shift) || key.return || input === ' ') {
-      if (navigation.moduleId && navigation.pageId === 'modules') {
-        navigation.openPage('module');
-      }
-    }
-    if ((key.tab && key.shift) || key.leftArrow || key.escape) {
-      if (navigation.pageId === 'module') {
-        navigation.openPage('modules');
-      }
-    }
   });
 
   if (isLoadingSession) {
@@ -69,9 +58,9 @@ const App = () => {
   if (!isAuthenticated) {
     return <Login {...loginPageProps} />;
   }
-  const pageData = pages[navigation.pageId as keyof typeof pages];
+  const pageData = pages[navigation.path as keyof typeof pages];
 
-  const Page = pageData.render;
+  const Page = pageData.component;
 
   return (
     <Box columnGap={1}>

@@ -97,7 +97,7 @@ const modulesListStore = create<ModulesListStore>((set) => ({
 }));
 
 export default function useModulesList(isActive = true): ModulesListProps {
-  const store = useStore(modulesListStore);
+  const navigation = useNavigation();
 
   const modulesQuery = useLearningPlatformModules();
 
@@ -214,15 +214,11 @@ export default function useModulesList(isActive = true): ModulesListProps {
         }
       }
       if (key.downArrow) {
-        const selected = modulesInList.findIndex(
-          (i) => i.id === navigation.moduleId
-        );
-        if (selected === -1) {
-          navigation.selectModule(modulesInList[0]?.id);
+      if ((key.tab && !key.shift) || key.return || input === ' ') {
+        if (listStore.selectedItemId && navigation.path === 'modules') {
+          navigation.openPage('module', { moduleId: listStore.selectedItemId });
         }
-        if (selected < modulesInList.length - 1) {
-          navigation.selectModule(modulesInList[selected + 1]?.id);
-        }
+      }
       }
     },
     { isActive }
@@ -231,9 +227,7 @@ export default function useModulesList(isActive = true): ModulesListProps {
   return {
     onSearchSubmit: (openResultIfOnlyOne = true) => {
       navigation.unfocus();
-      navigation.selectModule(modulesInList[0]?.id);
-      if (openResultIfOnlyOne && modulesInList.length === 1) {
-        navigation.openPage('module');
+        navigation.openPage('module', { moduleId });
       }
     },
     onSearchCancel: () => {
