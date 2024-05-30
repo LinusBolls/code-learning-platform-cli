@@ -7,15 +7,15 @@ import { useTheme } from '../../../services/useTheme/index.js';
 import TextInput from '../../component/TextInput.js';
 
 export interface LoginProps {
-  onAccessTokenSubmit: (accessToken: string) => void;
+  signInWithRefreshToken: (refreshToken: string) => void;
 }
-export default function Login({ onAccessTokenSubmit }: LoginProps) {
+export default function Login({ signInWithRefreshToken }: LoginProps) {
   const { theme } = useTheme();
 
-  const [accessToken, setAccessToken] = useState('');
+  const [refreshToken, setRefreshToken] = useState('');
 
   function onSubmit() {
-    onAccessTokenSubmit(accessToken);
+    signInWithRefreshToken(refreshToken);
   }
 
   return (
@@ -26,14 +26,14 @@ export default function Login({ onAccessTokenSubmit }: LoginProps) {
           Please paste your{' '}
           <Link url="https://github.com/linusBolls/code-university-sdk">
             <Text color={theme.link.main} underline={false}>
-              access token
+              refresh token
             </Text>
           </Link>{' '}
           for the CODE Learning Platform:{' '}
         </Text>
         <TextInput
-          value={accessToken}
-          onChange={setAccessToken}
+          value={refreshToken}
+          onChange={setRefreshToken}
           onSubmit={onSubmit}
           type="password"
         />

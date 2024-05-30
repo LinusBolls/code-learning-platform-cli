@@ -139,17 +139,17 @@ export const useLearningPlatform = (options?: UseLearningPlatformOptions) => {
   const isDown = noNetwork || isUnderMaintanance;
   const isLoadingSession = store.isLoadingSession;
 
-  async function signInWithAccessToken(accessToken: string) {
+  async function signInWithRefreshToken(refreshToken: string) {
     store.actions.startLoadingSession();
 
-    const client = await LearningPlatformClient.fromAccessToken(
-      accessToken,
+    const client = await LearningPlatformClient.fromRefreshToken(
+      refreshToken,
       options?.clientOptions
     );
     store.actions.finishLoadingSession(client);
 
     const storageValue = JSON.stringify({
-      accessToken,
+      refreshToken,
     });
     await asyncStorage.setItemAsync(storageKey, storageValue);
   }
@@ -160,7 +160,7 @@ export const useLearningPlatform = (options?: UseLearningPlatformOptions) => {
       if (storageValue) {
         const session = JSON.parse(storageValue);
 
-        await signInWithAccessToken(session.accessToken);
+        await signInWithRefreshToken(session.refreshToken);
       } else {
         store.actions.abortLoadingSession();
       }
@@ -192,10 +192,10 @@ export const useLearningPlatform = (options?: UseLearningPlatformOptions) => {
     isDown,
     isUnderMaintanance,
     isAuthenticated,
-    accessToken: store.client?.accessToken!,
+    refreshToken: store.client?.refreshToken!,
     learningPlatform: store.client!,
 
-    signInWithAccessToken,
+    signInWithRefreshToken,
     signOut,
   };
 };
